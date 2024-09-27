@@ -1,1 +1,1 @@
-Website using Django framework to code our website.
+Website using Django framework.
