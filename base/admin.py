@@ -1,4 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-# Hello, Django! this is just a test
+
+from .models import Room
+ 
+admin.site.register(Room)
