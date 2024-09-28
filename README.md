@@ -1,1 +1,1 @@
-Website using Django framework.
+Project designed using django framework.
