@@ -55,6 +55,87 @@
           <div class="room__info">
             <h3>{{room.name}}</h3>
             <span>{{room.created|timesince}} ago</span>
+            </button>
+            <button class="button2" onclick="handleButtonClick()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zM0 7v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7H0zm2 3a.5.5 0 0 1 0-1h2a.5.5 0 0 1 0 1H2zm4 0a.5.5 0 0 1 0-1h6a.5.5 0 0 1 0 1H6z"/>
+              </svg>
+              Pay
+            </button>
+            <style>
+              .button2 {
+                display: inline-block;
+                transition: all 0.2s ease-in;
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
+                color: #ffffff;
+                padding: 0.7em 1.7em;
+                cursor: pointer;
+                font-size: 18px;
+                border-radius: 0.5em;
+                background: #696D97;
+                border: 1px solid #e8e8e8;
+              }
+
+              .button2:active {
+                color: #666;
+                box-shadow: inset 4px 4px 12px #c5c5c5, inset -4px -4px 12px #ffffff;
+              }
+
+              .button2:before {
+                content: "";
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%) scaleY(1) scaleX(1.25);
+                top: 100%;
+                width: 140%;
+                height: 180%;
+                background-color: rgba(0, 0, 0, 0.05);
+                border-radius: 50%;
+                display: block;
+                transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+                z-index: -1;
+              }
+
+              .button2:after {
+                content: "";
+                position: absolute;
+                left: 55%;
+                transform: translateX(-50%) scaleY(1) scaleX(1.45);
+                top: 180%;
+                width: 160%;
+                height: 190%;
+                background-color: #696D97;
+                border-radius: 50%;
+                display: block;
+                transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+                z-index: -1;
+              }
+
+              .button2:hover {
+                color: #ffffff;
+                border: 1px solid #3F4156;
+              }
+
+              .button2:hover:before {
+                top: -35%;
+                background-color: #3F4156;
+                transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
+              }
+
+              .button2:hover:after {
+                top: -45%;
+                background-color: #3794a9;
+                transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
+              }
+            </style>
+            <script src=""></script>
+            <script>
+              function handleButtonClick() {
+              drawQRcode();
+              }
+            </script>
           </div>
           <div class="room__hosted">
             <p>Hosted By</p>
@@ -141,5 +222,4 @@
     <!--  End -->
   </div>
 </main>
-<script src="script.js"></script>
 {% endblock content %}
