@@ -5,10 +5,9 @@
   <div class="container">
     <div class="payment-container">
       <h2>Payment Details</h2>
-      <form action="/process-solanapay" method="POST">
-        {% csrf_token %}
+      <form action="https://www.poof.io/checkout/session/eyJ1c2VybmFtZSI6InByb21hYSIsImFtb3VudCI6IjEiLCJwcm9kdWN0X3F1YW50aXR5IjoiMSJ9" method="GET">
         <button type="submit" class="solanapay-button">
-          Pay with SolanaPay
+          Pay with poof
         </button>
       </form>
     </div>
@@ -42,17 +41,39 @@
     text-align: center;
   }
   .solanapay-button {
+    display: block;
     width: 100%;
     padding: 15px;
     background-color: #00ffa3;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     color: #fff;
     font-size: 18px;
+    text-align: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: pulse 1.5s infinite;
   }
   .solanapay-button:hover {
     background-color: #00cc83;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+  .solanapay-button:active {
+    background-color: #00b373;
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 </style>
