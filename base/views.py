@@ -101,6 +101,8 @@ def room(request, pk):
                'participants': participants}
     return render(request, 'base/room.html', context)
 
+def payments(request):
+    return render(request, 'base/payments.html')
 
 def userProfile(request, pk):
     user = User.objects.get(id=pk)
