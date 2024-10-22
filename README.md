@@ -1,1 +1,1 @@
-Project designed using django framework.
+Our proposal for Colosseum Hackaton by Solana.
