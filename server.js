@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { Connection, clusterApiUrl } = require('@solana/web3.js');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // Store simple in-memory sessions
 const sessions = new Map();
@@ -173,4 +175,8 @@ app.delete('/events/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'Evento.html'));
+});
+
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
