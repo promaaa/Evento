@@ -941,12 +941,14 @@
 
         .project-card:hover::before {
             background: rgba(0,0,0,0.55);
+
         }
 
         .project-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 12px 24px rgba(0,0,0,0.6);
             border-color: var(--cosmic-gold);
+
         }
 
         .project-image {
@@ -980,6 +982,7 @@
             width: 100%;
             padding: var(--spacing-6);
             background: rgba(0,0,0,0.6);
+
         }
 
         .project-title {
@@ -2685,6 +2688,9 @@
         .modal-actions {
             text-align: center;
             margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
         }
 
         .modal-input {
@@ -2732,6 +2738,7 @@
         }
 
         .feature-card:hover::after {
+
             opacity: 1;
         }
 
@@ -2747,6 +2754,7 @@
         .feature-card .feature-description {
             position: relative;
             z-index: 1;
+
         }
 
         .feature-card .feature-icon {
@@ -2762,6 +2770,7 @@
 
         .feature-card:hover .feature-icon {
             color: var(--cosmic-platinum);
+
         }
 
         .feature-card .feature-icon svg {
@@ -2773,12 +2782,14 @@
         .feature-card .feature-title {
             font-size: 1.25rem;
             margin-bottom: var(--spacing-2);
+
             font-weight: 600;
         }
 
         .feature-card .feature-description {
             font-size: 0.95rem;
             color: var(--muted-foreground);
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -2936,7 +2947,14 @@
                                     <input type="text" id="eventOrg" placeholder="Solana Foundation" required>
                                 </div>
                             </div>
-                            
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Solana Address *</label>
+                                    <input type="text" id="userWallet" placeholder="Your wallet address" required>
+                                </div>
+                            </div>
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Event Date</label>
@@ -3089,6 +3107,7 @@
         // === ÉTAT GLOBAL ===
         let walletAddress = null;
         let connection = null;
+        let provider = null;
         let events = [];
 
         // Default events loaded when no data available from server
@@ -3297,14 +3316,23 @@
             }
         }
 
+        function getProvider() {
+            if ('solana' in window) {
+                const provider = window.solana;
+                if (provider.isPhantom) return provider;
+            }
+            return null;
+        }
+
         async function connectWallet() {
-            if (!window.solana || !window.solana.isPhantom) {
+            provider = getProvider();
+            if (!provider) {
                 showMessage('createMessages', 'error', 'Phantom Wallet required');
                 return;
             }
 
             try {
-                const response = await window.solana.connect();
+                const response = await provider.connect();
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
@@ -3332,8 +3360,8 @@
 
         async function disconnectWallet() {
             try {
-                if (window.solana && window.solana.isConnected) {
-                    await window.solana.disconnect();
+                if (provider && provider.isConnected) {
+                    await provider.disconnect();
                 }
                 walletAddress = null;
                 connection = null;
@@ -3346,16 +3374,40 @@
             }
         }
 
+        async function payWithPhantom(toAddress, lamports) {
+            provider = provider || getProvider();
+            if (!provider) throw new Error('Wallet not connected');
+            connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+
+            const transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: provider.publicKey,
+                    toPubkey: new solanaWeb3.PublicKey(toAddress),
+                    lamports
+                })
+            );
+            transaction.feePayer = provider.publicKey;
+            const { blockhash } = await connection.getRecentBlockhash();
+            transaction.recentBlockhash = blockhash;
+            const signed = await provider.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signed.serialize());
+            await connection.confirmTransaction(signature, 'confirmed');
+            return signature;
+        }
+
         function updateWalletUI() {
             const btn = document.getElementById('walletBtn');
             const text = document.getElementById('walletText');
-            
+            const walletInput = document.getElementById('userWallet');
+
             if (walletAddress) {
                 btn.classList.add('connected');
                 text.textContent = truncateAddress(walletAddress);
+                if (walletInput) walletInput.value = walletAddress;
             } else {
                 btn.classList.remove('connected');
                 text.textContent = 'Connect Wallet';
+                if (walletInput) walletInput.value = '';
             }
         }
 
@@ -3479,6 +3531,8 @@
                 return;
             }
 
+            const userWallet = eventData.wallet || walletAddress;
+
             try {
                 const newEvent = {
                     title: eventData.title.trim(),
@@ -3486,8 +3540,8 @@
                     goal: parseSOL(eventData.goal),
                     description: eventData.description.trim(),
                     imageUrl: eventData.imageUrl?.trim() || '',
-                    beneficiaryWallet: walletAddress,
-                    creatorWallet: walletAddress,
+                    beneficiaryWallet: userWallet,
+                    creatorWallet: userWallet,
                     tickets: eventData.tickets || [],
                     date: eventData.date
                 };
@@ -3603,7 +3657,8 @@
                 organization: document.getElementById('eventOrg').value,
                 goal: document.getElementById('eventGoal').value,
                 description: document.getElementById('eventDescription').value,
-                imageUrl: document.getElementById('eventImage').value
+                imageUrl: document.getElementById('eventImage').value,
+                wallet: document.getElementById('userWallet').value || walletAddress
             };
             
             createEvent(eventData);
@@ -3618,9 +3673,10 @@
             displayEvents();
 
             // Récupérer l'état du wallet si déjà connecté
-            if (window.solana && window.solana.isPhantom) {
+            provider = getProvider();
+            if (provider) {
                 try {
-                    const resp = await window.solana.connect({ onlyIfTrusted: true });
+                    const resp = await provider.connect({ onlyIfTrusted: true });
                     walletAddress = resp.publicKey.toString();
                     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                     updateWalletUI();
@@ -3628,7 +3684,7 @@
                     // Wallet not yet connected
                 }
 
-                window.solana.on('accountChanged', (publicKey) => {
+                provider.on('accountChanged', (publicKey) => {
                     if (publicKey) {
                         walletAddress = publicKey.toString();
                     } else {
@@ -3708,7 +3764,7 @@
         `;
         document.head.appendChild(asteroidStyles);
 
-        // Gestion des changements de compte wallet effectuée via window.solana (voir initialisation)
+        // Gestion des changements de compte wallet effectuée via le fournisseur Phantom (voir initialisation)
 
         // === NOUVELLE INTERFACE SIMPLE ===
         let currentEventType = 'event';
@@ -3820,6 +3876,7 @@
             }
 
             // Collecte des données selon le type
+            const userWallet = document.getElementById('userWallet').value || walletAddress;
             let eventData = {
                 id: Date.now().toString(),
                 title,
@@ -3829,8 +3886,8 @@
                 date: document.getElementById('eventDate').value,
                 location: document.getElementById('eventLocation').value,
                 type: currentEventType,
-                beneficiaryWallet: walletAddress,
-                creatorWallet: walletAddress,
+                beneficiaryWallet: userWallet,
+                creatorWallet: userWallet,
                 raised: 0
             };
 
@@ -4039,30 +4096,12 @@
                 btn.innerHTML = 'Signing...';
                 btn.disabled = true;
 
-                if (!window.solana || !window.solana.isPhantom) throw new Error('Wallet not connected');
-                if (!connection) {
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                }
+                provider = provider || getProvider();
+                if (!provider) throw new Error('Wallet not connected');
+                connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
-                const fromPubkey = new solanaWeb3.PublicKey(walletAddress);
-                const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
                 const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
-                const transaction = new solanaWeb3.Transaction().add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey,
-                        toPubkey,
-                        lamports
-                    })
-                );
-                transaction.feePayer = fromPubkey;
-                const latestBlockhash = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = latestBlockhash.blockhash;
-
-                const { signature } = await window.solana.signAndSendTransaction(transaction);
-                await connection.confirmTransaction(
-                    { signature, ...latestBlockhash },
-                    'confirmed'
-                );
+                const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
 
                 await fetch(`${API_BASE}/purchase`, {
                     method: 'POST',
