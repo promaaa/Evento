@@ -3424,12 +3424,13 @@
             provider = provider || getProvider();
             if (!provider || !provider.isPhantom) throw new Error('Phantom Wallet required');
 
-            if (!provider.isConnected) {
-                await connectWallet();
-            }
-            if (!provider.isConnected) throw new Error('Wallet connection required');
+            // Always prompt the Phantom extension so the user can confirm the wallet
+            const response = await provider.connect({ onlyIfTrusted: false });
+            walletAddress = response.publicKey.toString();
+            updateWalletUI();
 
-            connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+            connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+
 
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
