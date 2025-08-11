@@ -1283,7 +1283,6 @@
         .feature-icon {
             position: relative;
             z-index: 2;
-            font-size: 24px;
             margin: 40px auto 24px;
             display: flex;
             align-items: center;
@@ -1299,47 +1298,30 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .feature-icon::before {
-            content: '';
-            position: absolute;
-            font-size: 36px;
-            line-height: 1;
-            color: inherit;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        .feature-icon svg {
+            width: 36px;
+            height: 36px;
+            stroke: currentColor;
         }
 
-        /* Speed icon - Lightning */
+        /* Icon container colors */
         .feature-card:nth-child(1) .feature-icon {
             border-color: #FF6B6B;
             color: #FF6B6B;
         }
 
-        .feature-card:nth-child(1) .feature-icon::before {
-            content: '⚡';
-        }
-
-        /* Security icon - Shield */
         .feature-card:nth-child(2) .feature-icon {
             border-color: #4ECDC4;
             color: #4ECDC4;
         }
 
-        .feature-card:nth-child(2) .feature-icon::before {
-            content: '�';
-        }
-
-        /* Transparency icon - Eye/Diamond */
         .feature-card:nth-child(3) .feature-icon {
             border-color: #FFD93D;
             color: #FFD93D;
         }
 
-        .feature-card:nth-child(3) .feature-icon::before {
-            content: '�';
-        }
-
         .feature-card:hover .feature-icon {
-            box-shadow: 
+            box-shadow:
                 0 0 0 4px rgba(255, 215, 0, 0.3),
                 0 8px 20px rgba(0, 0, 0, 0.4);
             transform: scale(1.1);
@@ -2551,50 +2533,6 @@
             margin-top: var(--space-xl);
         }
 
-        .feature-card {
-            text-align: center;
-            padding: var(--space-2xl) var(--space-xl);
-            position: relative;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            filter: blur(30px);
-            z-index: -1;
-        }
-
-        .feature-icon {
-            font-size: 3.5rem;
-            margin-bottom: var(--space-lg);
-            background: var(--gradient-accent);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.3));
-        }
-
-        .feature-title {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: var(--space-md);
-            color: var(--text-primary);
-            letter-spacing: -0.01em;
-        }
-
-        .feature-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            font-size: 1rem;
-        }
 
         /* === RESPONSIVE PREMIUM === */
         @media (max-width: 768px) {
@@ -3169,6 +3107,53 @@
             text-align: center;
             margin-top: 24px;
         }
+
+        /* === FEATURE CARD NEW DESIGN === */
+        .feature-card::before,
+        .feature-card::after {
+            content: none;
+        }
+
+        .feature-card {
+            background: var(--gradient-card);
+            text-align: center;
+            padding: var(--space-xl);
+            border-radius: var(--radius-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: var(--shadow-md);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: default;
+            height: auto;
+            min-width: 0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .feature-card .feature-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto var(--space-md);
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature-card .feature-title {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .feature-card .feature-description {
+            font-size: 0.95rem;
+            color: var(--muted-foreground);
+        }
     </style>
 </head>
 <body>
@@ -3228,7 +3213,11 @@
 
             <div class="grid grid-cols-3">
                 <div class="card feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                    </div>
                     <h3 class="feature-title">Sub-second finality</h3>
                     <p class="feature-description">
                         Powered by Solana's 400ms block times. 65,000+ TPS capacity with minimal transaction costs.
@@ -3236,7 +3225,12 @@
                 </div>
 
                 <div class="card feature-card">
-                    <div class="feature-icon">🔒</div>
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
                     <h3 class="feature-title">Non-custodial</h3>
                     <p class="feature-description">
                         Smart contract automation. No intermediaries, no platform risk. Code is law.
@@ -3244,7 +3238,14 @@
                 </div>
 
                 <div class="card feature-card">
-                    <div class="feature-icon">�</div>
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18" />
+                            <path d="M18 17V9" />
+                            <path d="M13 17V5" />
+                            <path d="M8 17v-3" />
+                        </svg>
+                    </div>
                     <h3 class="feature-title">Full auditability</h3>
                     <p class="feature-description">
                         On-chain transparency. Every transaction verifiable on Solana explorer.
@@ -3396,6 +3397,7 @@
 
         <!-- Section Explore -->
         <section id="explore" class="section">
+            <div id="exploreMessages"></div>
             <div class="explore-header">
                 <div class="explore-hero">
                     <div class="explore-hero-content">
@@ -3755,11 +3757,11 @@
                             
                             <div class="project-actions">
                                 ${isEvent ? `
-                                    <button class="btn btn-primary" onclick="showTickets('${event.id}')" ${!walletAddress ? 'disabled' : ''}>
+                                    <button class="btn btn-primary" type="button" onclick="showTickets('${event.id}')">
                                         Acheter tickets
                                     </button>
                                 ` : `
-                                    <button class="btn btn-primary" onclick="fundEvent('${event.id}')" ${!walletAddress ? 'disabled' : ''}>
+                                    <button class="btn btn-primary" type="button" onclick="fundEvent('${event.id}')" ${!walletAddress ? 'disabled' : ''}>
                                         Contribuer
                                     </button>
                                 `}
@@ -4200,6 +4202,10 @@
 
         // === GESTION DES TICKETS ===
         function showTickets(eventId) {
+            if (!walletAddress) {
+                showMessage('exploreMessages', 'error', 'Veuillez connecter votre wallet');
+                return;
+            }
             const event = events.find(e => e.id === eventId);
             if (!event || !event.tickets) return;
 
