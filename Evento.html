@@ -4286,6 +4286,13 @@
             }
         });
 
+        // Fermer le modal avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTicketModal();
+            }
+        });
+
         console.log('🚀 Evento Protocol - Version Billetterie initialisé');
     </script>
 </body>
