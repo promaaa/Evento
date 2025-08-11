@@ -3580,7 +3580,7 @@
                             
                             <div class="project-actions">
                                 ${isEvent ? `
-                                    <button class="btn btn-primary" type="button" onclick="showTickets('${event.id}')">
+                                    <button class="btn btn-primary" type="button" onclick="showTickets(${event.id})">
                                         Acheter tickets
                                     </button>
                                 ` : `
@@ -4044,7 +4044,8 @@
 
                 return;
             }
-            const event = events.find(e => e.id === eventId);
+            const id = parseInt(eventId, 10);
+            const event = events.find(e => e.id === id);
             if (!event || !event.tickets) return;
 
             // Créer le modal s'il n'existe pas
