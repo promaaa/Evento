@@ -3393,34 +3393,7 @@
 
         // Wallet adapter (Phantom)
         const walletAdapterPromise = import('https://unpkg.com/@solana/wallet-adapter-phantom@0.9.25/lib/index.esm.js')
-            .then(({ PhantomWalletAdapter }) => {
-                const adapter = new PhantomWalletAdapter();
-
-                adapter.on('connect', async () => {
-                    walletAddress = adapter.publicKey.toBase58();
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                    updateWalletUI();
-                    displayEvents();
-                    try {
-                        await fetch(`${API_BASE}/auth/wallet`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ publicKey: walletAddress })
-                        });
-                    } catch (e) {
-                        console.error('Auth failed', e);
-                    }
-                });
-
-                adapter.on('disconnect', () => {
-                    walletAddress = null;
-                    connection = null;
-                    updateWalletUI();
-                    displayEvents();
-                });
-
-                return adapter;
-            })
+            .then(({ PhantomWalletAdapter }) => new PhantomWalletAdapter())
             .catch(err => {
                 console.error('Wallet adapter loading failed', err);
                 return null;
@@ -3551,8 +3524,18 @@
                 walletAddress = adapter.publicKey.toBase58();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
+                displayEvents();
                 console.log('✅ Wallet connected:', walletAddress);
                 showMessage('createMessages', 'success', 'Wallet connected successfully');
+                try {
+                    await fetch(`${API_BASE}/auth/wallet`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ publicKey: walletAddress })
+                    });
+                } catch (e) {
+                    console.error('Auth failed', e);
+                }
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
                 if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
@@ -3572,6 +3555,7 @@
                 walletAddress = null;
                 connection = null;
                 updateWalletUI();
+                displayEvents();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
             } catch (error) {
                 console.error('❌ Disconnect error:', error);
