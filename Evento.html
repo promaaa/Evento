@@ -479,6 +479,7 @@
         }
 
         .nav-item {
+
             padding: 8px 12px;
             color: var(--cosmic-platinum);
             text-decoration: none;
@@ -491,6 +492,7 @@
         .nav-item:hover,
         .nav-item.active {
             color: var(--cosmic-gold);
+
         }
 
         .wallet-connect {
@@ -3029,6 +3031,7 @@
                         <circle cx="20" cy="4" r="3" fill="url(#cometHeadGradient)" />
                         <path d="M2 18C8 12 14 8 20 4" stroke="url(#cometTailGradient)" stroke-width="3" stroke-linecap="round" fill="none" />
                         <path d="M2 14C8 9 14 5 21 3" stroke="url(#cometTailGradient)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6" />
+
                     </svg>
                     <span class="logo-text">Evento</span>
                 </a>
@@ -3041,7 +3044,7 @@
                 
                 <button class="wallet-connect" id="walletBtn" onclick="toggleWallet()">
                     <div class="status-dot" id="walletStatus"></div>
-                    <span id="walletText">Connect</span>
+                    <span id="walletText">Connect Wallet</span>
                 </button>
             </div>
         </div>
@@ -3303,41 +3306,6 @@
         let connection = null;
         let events = [];
 
-        // Wallet adapter (Phantom)
-        const walletAdapterPromise = import('https://unpkg.com/@solana/wallet-adapter-phantom@0.9.25/lib/index.esm.js')
-            .then(({ PhantomWalletAdapter }) => {
-                const adapter = new PhantomWalletAdapter();
-
-                adapter.on('connect', async () => {
-                    walletAddress = adapter.publicKey.toBase58();
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                    updateWalletUI();
-                    displayEvents();
-                    try {
-                        await fetch(`${API_BASE}/auth/wallet`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ publicKey: walletAddress })
-                        });
-                    } catch (e) {
-                        console.error('Auth failed', e);
-                    }
-                });
-
-                adapter.on('disconnect', () => {
-                    walletAddress = null;
-                    connection = null;
-                    updateWalletUI();
-                    displayEvents();
-                });
-
-                return adapter;
-            })
-            .catch(err => {
-                console.error('Wallet adapter loading failed', err);
-                return null;
-            });
-
         // Default events loaded when no data available from server
         const defaultEvents = [
             {
@@ -3452,19 +3420,28 @@
         }
 
         async function connectWallet() {
-            const adapter = await walletAdapterPromise;
-            if (!adapter) {
+            if (!window.solana || !window.solana.isPhantom) {
                 showMessage('createMessages', 'error', 'Phantom Wallet required');
                 return;
             }
 
             try {
-                await adapter.connect();
-                walletAddress = adapter.publicKey.toBase58();
+                const response = await window.solana.connect();
+                walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
+                displayEvents();
                 console.log('✅ Wallet connected:', walletAddress);
                 showMessage('createMessages', 'success', 'Wallet connected successfully');
+                try {
+                    await fetch(`${API_BASE}/auth/wallet`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ publicKey: walletAddress })
+                    });
+                } catch (e) {
+                    console.error('Auth failed', e);
+                }
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
                 if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
@@ -3477,13 +3454,13 @@
 
         async function disconnectWallet() {
             try {
-                const adapter = await walletAdapterPromise;
-                if (adapter && adapter.connected) {
-                    await adapter.disconnect();
+                if (window.solana && window.solana.isConnected) {
+                    await window.solana.disconnect();
                 }
                 walletAddress = null;
                 connection = null;
                 updateWalletUI();
+                displayEvents();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
             } catch (error) {
                 console.error('❌ Disconnect error:', error);
@@ -3500,7 +3477,7 @@
                 text.textContent = truncateAddress(walletAddress);
             } else {
                 btn.classList.remove('connected');
-                text.textContent = 'Connect';
+                text.textContent = 'Connect Wallet';
             }
         }
 
@@ -3607,7 +3584,7 @@
                             
                             <div class="project-actions">
                                 ${isEvent ? `
-                                    <button class="btn btn-primary" type="button" onclick="showTickets('${event.id}')">
+                                    <button class="btn btn-primary" type="button" onclick="showTickets(${event.id})">
                                         Acheter tickets
                                     </button>
                                 ` : `
@@ -3773,11 +3750,25 @@
             displayEvents();
 
             // Récupérer l'état du wallet si déjà connecté
-            const adapter = await walletAdapterPromise;
-            if (adapter && adapter.connected) {
-                walletAddress = adapter.publicKey.toBase58();
-                connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                updateWalletUI();
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const resp = await window.solana.connect({ onlyIfTrusted: true });
+                    walletAddress = resp.publicKey.toString();
+                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                    updateWalletUI();
+                } catch (e) {
+                    // Wallet not yet connected
+                }
+
+                window.solana.on('accountChanged', (publicKey) => {
+                    if (publicKey) {
+                        walletAddress = publicKey.toString();
+                    } else {
+                        walletAddress = null;
+                    }
+                    updateWalletUI();
+                    displayEvents();
+                });
             }
         });
 
@@ -3849,7 +3840,7 @@
         `;
         document.head.appendChild(asteroidStyles);
 
-        // Gestion des changements de compte wallet gérée par le wallet adapter (voir initialisation)
+        // Gestion des changements de compte wallet effectuée via window.solana (voir initialisation)
 
         // === NOUVELLE INTERFACE SIMPLE ===
         let currentEventType = 'event';
@@ -4057,7 +4048,8 @@
 
                 return;
             }
-            const event = events.find(e => e.id === eventId);
+            const id = parseInt(eventId, 10);
+            const event = events.find(e => e.id === id);
             if (!event || !event.tickets) return;
 
             // Créer le modal s'il n'existe pas
@@ -4179,13 +4171,12 @@
                 btn.innerHTML = 'Signing...';
                 btn.disabled = true;
 
-                const adapter = await walletAdapterPromise;
-                if (!adapter || !adapter.connected) throw new Error('Wallet not connected');
+                if (!window.solana || !window.solana.isPhantom) throw new Error('Wallet not connected');
                 if (!connection) {
                     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 }
 
-                const fromPubkey = adapter.publicKey;
+                const fromPubkey = new solanaWeb3.PublicKey(walletAddress);
                 const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
                 const transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
@@ -4197,8 +4188,7 @@
                 transaction.feePayer = fromPubkey;
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-                const signed = await adapter.signTransaction(transaction);
-                const signature = await connection.sendRawTransaction(signed.serialize());
+                const { signature } = await window.solana.signAndSendTransaction(transaction);
                 await connection.confirmTransaction(signature, 'processed');
 
                 await fetch(`${API_BASE}/purchase`, {
