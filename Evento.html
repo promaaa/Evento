@@ -4178,18 +4178,23 @@
 
                 const fromPubkey = new solanaWeb3.PublicKey(walletAddress);
                 const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
+                const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
                 const transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey,
                         toPubkey,
-                        lamports: total * solanaWeb3.LAMPORTS_PER_SOL
+                        lamports
                     })
                 );
                 transaction.feePayer = fromPubkey;
-                transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+                const latestBlockhash = await connection.getLatestBlockhash();
+                transaction.recentBlockhash = latestBlockhash.blockhash;
 
                 const { signature } = await window.solana.signAndSendTransaction(transaction);
-                await connection.confirmTransaction(signature, 'processed');
+                await connection.confirmTransaction(
+                    { signature, ...latestBlockhash },
+                    'confirmed'
+                );
 
                 await fetch(`${API_BASE}/purchase`, {
                     method: 'POST',
