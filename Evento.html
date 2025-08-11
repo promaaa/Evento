@@ -430,22 +430,17 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        .logo::before {
-            content: '☄️';
-            font-size: 28px;
-            filter: drop-shadow(0 0 10px var(--cosmic-gold));
-            animation: cometGlow 3s ease-in-out infinite alternate;
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            display: block;
+            filter: drop-shadow(0 0 6px var(--cosmic-gold));
+            transition: transform var(--transition-normal), filter var(--transition-normal);
         }
 
-        @keyframes cometGlow {
-            0% {
-                filter: drop-shadow(0 0 10px var(--cosmic-gold));
-                transform: rotate(0deg);
-            }
-            100% {
-                filter: drop-shadow(0 0 20px var(--cosmic-amber)) drop-shadow(0 0 30px var(--cosmic-gold));
-                transform: rotate(5deg);
-            }
+        .logo:hover .logo-icon {
+            transform: translateX(2px) rotate(5deg);
+            filter: drop-shadow(0 0 12px var(--cosmic-amber));
         }
 
         .logo-text {
@@ -457,7 +452,7 @@
         }
 
         .logo-text::after {
-            content: 'EVENTO PROTOCOL';
+            content: 'Evento';
             position: absolute;
             inset: 0;
             background: var(--gradient-cosmic);
@@ -476,76 +471,26 @@
 
         .nav {
             display: flex;
-            gap: var(--spacing-6);
-            position: relative;
-        }
-
-        .nav::before {
-            content: '';
-            position: absolute;
-            inset: -8px;
-            background: rgba(255, 255, 255, 0.03);
+            gap: var(--spacing-8);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            backdrop-filter: blur(12px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .nav:hover::before {
-            opacity: 1;
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
         }
 
         .nav-item {
-            color: var(--gray-400);
+            padding: 8px 12px;
+            color: var(--cosmic-platinum);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-            padding: 8px 16px;
-            border-radius: 8px;
-            z-index: 1;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item:hover {
-            color: var(--gray-100);
-            transform: translateY(-1px);
-        }
-
-        .nav-item:hover::before {
-            opacity: 1;
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .nav-item.active {
-            color: var(--gray-50);
-            background: var(--gradient-accent);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 600;
-        }
-
-        .nav-item.active::before {
-            opacity: 1;
-            background: var(--gradient-accent);
-            box-shadow: var(--shadow-glow);
+            border-radius: var(--radius-full);
+            transition: color var(--transition-fast);
         }
 
         .nav-item:hover,
         .nav-item.active {
-            color: var(--foreground);
+            color: var(--cosmic-gold);
         }
 
         .wallet-connect {
@@ -886,60 +831,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
-        }
-
-        /* === NAVIGATION MINIMALISTE === */
-        .nav {
-            display: flex;
-            gap: 8px;
-            position: relative;
-            background: rgba(42, 42, 42, 0.3);
-            backdrop-filter: blur(10px);
-            padding: 6px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-
-        .nav-item {
-            color: var(--cosmic-silver);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-            padding: 10px 20px;
-            border-radius: 8px;
-            z-index: 1;
-            font-family: 'Inter', sans-serif;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: transparent;
-            border-radius: 8px;
-            opacity: 0;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item:hover {
-            color: var(--cosmic-platinum);
-            background: rgba(255, 215, 0, 0.08);
-        }
-
-        .nav-item.active {
-            color: var(--cosmic-gold);
-            background: rgba(255, 215, 0, 0.12);
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.15);
-        }
-
-        .nav-item.active::before {
-            opacity: 0;
         }
 
         /* === MESSAGES PREMIUM === */
@@ -2583,6 +2474,11 @@
                 font-size: 1.5rem;
             }
 
+            .logo-icon {
+                width: 24px;
+                height: 24px;
+            }
+
             .nav {
                 gap: var(--space-md);
             }
@@ -3118,7 +3014,18 @@
         <div class="container">
             <div class="header-content">
                 <a href="#" class="logo" onclick="showSection('home')">
-                    <span class="logo-text">EVENTO PROTOCOL</span>
+                    <svg class="logo-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="cometGradient" x1="3" y1="21" x2="18" y2="6" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="var(--cosmic-amber)" />
+                                <stop offset="1" stop-color="var(--cosmic-gold)" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="18" cy="6" r="4" fill="url(#cometGradient)" />
+                        <path d="M3 21c5-5 9-8 15-12" stroke="url(#cometGradient)" stroke-width="4" stroke-linecap="round" />
+                        <path d="M6 22c4-4 7-6 13-10" stroke="url(#cometGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+                    </svg>
+                    <span class="logo-text">Evento</span>
                 </a>
                 
                 <nav class="nav">
