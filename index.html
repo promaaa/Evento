@@ -4152,18 +4152,6 @@
                 const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
                 const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
 
-                await fetch(`${API_BASE}/purchase`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ signature })
-                });
-
-                ticket.sold = (ticket.sold || 0) + window.selectedQuantity;
-                event.raised += total;
-                saveEvents();
-                displayEvents();
-
-
                 document.getElementById('buyTicketBtn').innerHTML = 'Processing purchase...';
                 document.getElementById('buyTicketBtn').disabled = true;
 
@@ -4173,7 +4161,8 @@
                     body: JSON.stringify({
                         ticketIndex: window.selectedTicketIndex,
                         quantity: window.selectedQuantity,
-                        buyer: walletAddress
+                        buyer: walletAddress,
+                        signature
                     })
                 });
                 if (!res.ok) throw new Error('Server error');
