@@ -3625,54 +3625,6 @@
             });
         }
 
-        // === EVENT CREATION ===
-        async function createEvent(eventData) {
-            if (!walletAddress) {
-                showMessage('createMessages', 'error', 'Connect your wallet first');
-                return;
-            }
-
-            const userWallet = eventData.wallet || walletAddress;
-
-            try {
-                const newEvent = {
-                    title: eventData.title.trim(),
-                    organization: eventData.organization.trim(),
-                    goal: parseSOL(eventData.goal),
-                    description: eventData.description.trim(),
-                    imageUrl: eventData.imageUrl?.trim() || '',
-                    beneficiaryWallet: userWallet,
-                    creatorWallet: userWallet,
-                    tickets: eventData.tickets || [],
-                    date: eventData.date
-                };
-
-                if (!newEvent.title || !newEvent.organization || !newEvent.description) {
-                    throw new Error('All required fields must be completed');
-                }
-                if (newEvent.goal <= 0) {
-                    throw new Error('Target amount must be positive');
-                }
-
-                const res = await fetch(`${API_BASE}/events`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newEvent)
-                });
-                if (!res.ok) {
-                    throw new Error('Server error');
-                }
-
-                document.getElementById('eventForm').reset();
-                showMessage('createMessages', 'success', `Protocol "${newEvent.title}" deployed successfully`);
-                loadEvents();
-
-            } catch (error) {
-                console.error('❌ Creation error:', error);
-                showMessage('createMessages', 'error', error.message);
-            }
-        }
-
         // === FUNDING ===
         async function fundEvent(eventId) {
             if (!walletAddress) {
@@ -3741,29 +3693,6 @@
                 showMessage('createMessages', 'error', 'Failed to remove protocol');
             }
         }
-
-        // === FORM ===
-        function clearForm() {
-            document.getElementById('eventForm').reset();
-            document.getElementById('createMessages').innerHTML = '';
-        }
-
-        // === EVENT LISTENERS ===
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const eventData = {
-                title: document.getElementById('eventTitle').value,
-                organization: document.getElementById('eventOrg').value,
-                goal: document.getElementById('eventGoal').value,
-                description: document.getElementById('eventDescription').value,
-                imageUrl: document.getElementById('eventImage').value,
-                wallet: document.getElementById('userWallet').value || walletAddress
-            };
-            
-            createEvent(eventData);
-        });
 
         // === INITIALIZATION ===
         window.addEventListener('load', async () => {
@@ -4051,6 +3980,7 @@
                 setTimeout(() => {
                     showSection('explore');
                     showMessage('createMessages', '', '');
+                    showMessage('exploreMessages', 'success', `✅ ${currentEventType === 'event' ? 'Event' : 'Campaign'} "${title}" created successfully!`);
                 }, 2000);
                 
             } catch (error) {
