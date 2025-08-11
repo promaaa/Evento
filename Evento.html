@@ -926,9 +926,22 @@
             align-items: flex-end;
             background: var(--cosmic-charcoal);
             border: 1px solid rgba(255,255,255,0.06);
-
             cursor: pointer;
             transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+        }
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            transition: background .3s ease;
+            z-index: 1;
+        }
+
+        .project-card:hover::before {
+            background: rgba(0,0,0,0.55);
+
         }
 
         .project-card:hover {
@@ -948,6 +961,7 @@
             font-size: 24px;
             color: var(--muted-foreground);
             overflow: hidden;
+            z-index: 0;
         }
 
         .project-image img {
@@ -964,10 +978,10 @@
 
         .project-info {
             position: relative;
-            z-index: 1;
+            z-index: 2;
             width: 100%;
             padding: var(--spacing-6);
-            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
+            background: rgba(0,0,0,0.6);
 
         }
 
@@ -2683,40 +2697,64 @@
             margin: 20px 0;
         }
 
-
+        /* === FEATURE CARDS PREMIUM ROTATIVES === */
         .feature-card {
+            position: relative;
             text-align: center;
             padding: var(--spacing-8);
-            background: var(--cosmic-charcoal);
             border-radius: var(--radius-xl);
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
-
+            overflow: hidden;
+            background: var(--cosmic-charcoal);
+            color: var(--foreground);
+            transition: transform .3s ease, box-shadow .3s ease;
         }
 
         .feature-card::before {
             content: "";
             position: absolute;
             inset: 0;
+            padding: 2px;
             border-radius: inherit;
-            padding: 1px;
-            background: var(--gradient-accent);
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            background: conic-gradient(from 0deg, var(--cosmic-gold), var(--cosmic-amber), var(--cosmic-bronze), var(--cosmic-gold));
+            -webkit-mask:
+                linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
-            opacity: .4;
+            animation: spinBorder 6s linear infinite;
             pointer-events: none;
-            transition: opacity .3s ease;
         }
 
-        .feature-card:hover::before {
+        .feature-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: radial-gradient(circle at top left, rgba(255,215,0,0.15), transparent 70%),
+                        radial-gradient(circle at bottom right, rgba(135,206,235,0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity .4s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover::after {
+
             opacity: 1;
         }
 
+        @keyframes spinBorder { to { transform: rotate(360deg); } }
+
         .feature-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--cosmic-gold);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 24px rgba(255,215,0,0.25);
+        }
+
+        .feature-card .feature-icon,
+        .feature-card .feature-title,
+        .feature-card .feature-description {
+            position: relative;
+            z-index: 1;
+
         }
 
         .feature-card .feature-icon {
@@ -2727,6 +2765,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: color .3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            color: var(--cosmic-platinum);
+
         }
 
         .feature-card .feature-icon svg {
