@@ -27,7 +27,7 @@ const events = [
     description:
       '48 hours of creativity and coding for students and enthusiasts.',
     imageUrl:
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
@@ -46,7 +46,7 @@ const events = [
     description:
       'Inter-school sports tournament with various disciplines and a festive atmosphere.',
     imageUrl:
-      'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80',
 
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
@@ -66,7 +66,7 @@ const events = [
     description:
       'The largest student gala in Europe organized by Ecole Polytechnique.',
     imageUrl:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
 
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
@@ -74,6 +74,26 @@ const events = [
     tickets: [
       { id: 1, name: 'Standard Entry', price: 1.2, quantity: 300, sold: 120 },
       { id: 2, name: 'VIP Entry', price: 2.5, quantity: 100, sold: 40 }
+    ],
+    contributions: []
+  },
+  {
+    id: 4,
+    title: 'Solana Foundation Conference Paris',
+    organization: 'Solana Foundation',
+    goal: 8000,
+    raised: 0,
+    description:
+      'A flagship Solana conference hosted by the Solana Foundation in Paris. Talks, workshops and ecosystem showcases.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
+    creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
+    type: 'event',
+    tickets: [
+      { id: 1, name: 'General Admission', price: 0.8, quantity: 400, sold: 0 },
+      { id: 2, name: 'Builder Pass', price: 1.2, quantity: 200, sold: 0 },
+      { id: 3, name: 'VIP', price: 2.0, quantity: 50, sold: 0 }
     ],
     contributions: []
   }

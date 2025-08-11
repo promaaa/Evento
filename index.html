@@ -444,30 +444,28 @@
         }
 
         .logo-text {
-            background: var(--gradient-cosmic);
+            background: linear-gradient(90deg, #eab308 0%, #f59e0b 30%, #8a2be2 70%, #6b21a8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             position: relative;
+            transition: letter-spacing 0.25s ease;
         }
 
         .logo-text::after {
-            content: 'Evento';
+            content: '';
             position: absolute;
-            inset: 0;
-            background: var(--gradient-cosmic);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: blur(8px);
+            left: 0; right: 0; top: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(234,179,8,0), rgba(234,179,8,0.8), rgba(107,33,168,0));
+            transform: translateY(4px) scaleX(0.4);
+            border-radius: 2px;
             opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
+            transition: all 220ms ease;
         }
 
-        .logo:hover .logo-text::after {
-            opacity: 0.6;
-        }
+        .logo:hover .logo-text { letter-spacing: 0.5px; }
+        .logo:hover .logo-text::after { opacity: 1; transform: translateY(6px) scaleX(1); }
 
         .nav {
             display: flex;
@@ -2878,7 +2876,7 @@
         <div class="container">
             <div class="header-content">
                 <a href="#" class="logo" onclick="showSection('home')">
-                    <svg class="logo-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="logo-icon" id="cometLogo" viewBox="0 0 24 24" aria-hidden="true" style="transition: transform 300ms ease, filter 300ms ease;">
                         <defs>
                             <linearGradient id="cometTailGradient" x1="2" y1="20" x2="22" y2="4" gradientUnits="userSpaceOnUse">
                                 <stop offset="0" stop-color="var(--cosmic-amber)" stop-opacity="0" />
@@ -2906,6 +2904,17 @@
                 
                 <button class="wallet-connect" id="walletBtn" onclick="toggleWallet()">
                     <div class="status-dot" id="walletStatus"></div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px">
+                        <defs>
+                            <linearGradient id="phantomGradBtn" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#8a2be2"/>
+                                <stop offset="100%" stop-color="#6b21a8"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 3.5c4.6 0 8.5 3.18 8.5 7.6v3c0 3.2-2.7 5.8-6 5.8H9.5c-3.3 0-6-2.6-6-5.8v-3c0-4.42 3.9-7.6 8.5-7.6z" fill="url(#phantomGradBtn)" opacity="0.9"/>
+                        <path d="M9.2 10.8a1.3 1.3 0 1 1 2.6 0a1.3 1.3 0 0 1-2.6 0zm4.9 0a1.3 1.3 0 1 1 2.6 0a1.3 1.3 0 0 1-2.6 0z" fill="#fff"/>
+                        <path d="M8.8 14.3c.8 1.2 2.2 2 3.7 2s2.9-.8 3.7-2" stroke="#d1c4e9" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
                     <span id="walletText">Connect Phantom Wallet</span>
                 </button>
             </div>
@@ -2929,7 +2938,7 @@
                         Launch project
                     </button>
                 </div>
-                <p class="hackathon-note">Originally crafted for the Solana Colosseum Radarr Hackathon.</p>
+                <p class="hackathon-note" id="cometHoverZone">Originally crafted for the Solana Colosseum Radarr Hackathon.</p>
             </div>
 
             <div class="grid grid-cols-3">
@@ -3132,7 +3141,7 @@
                     <div class="explore-hero-content">
                         <h1 class="explore-title">Active Protocols</h1>
                         <p class="explore-subtitle">
-                            Discover and fund cutting-edge research and development initiatives
+                            Discover, fund and attend community-driven events and ecosystem initiatives built on Solana.
                         </p>
                         <div class="explore-stats">
                             <div class="stat-item">
@@ -3163,7 +3172,7 @@
     </div>
 
     <!-- Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@1.78.0/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
 
     <script>
         // === CONFIGURATION ===
@@ -3187,7 +3196,7 @@
                   goal: 2000,
                   raised: 1500,
                   description: '48 hours of creativity and coding for students and enthusiasts.',
-                  imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+                  imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   type: 'event',
@@ -3203,7 +3212,7 @@
                   goal: 4000,
                   raised: 3000,
                   description: 'Inter-school sports tournament with various disciplines and a festive atmosphere.',
-                  imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80',
+                  imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80',
 
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
@@ -3221,7 +3230,7 @@
                   raised: 4500,
                   description: 'The largest student gala in Europe organized by the Polytechnic School.',
 
-                imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+                imageUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
 
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
@@ -3235,16 +3244,19 @@
                   id: '4',
                   title: 'Solana Foundation Conference Paris',
                   organization: 'Solana Foundation',
-                  goal: 5000,
+                  goal: 8000,
                   raised: 0,
-                  description: 'Conference in Paris by the Solana Foundation. Support ecosystem initiatives with a donation.',
-                  imageUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
+                  description: 'A flagship Solana conference hosted by the Solana Foundation in Paris. Talks, workshops and ecosystem showcases.',
+                  imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
-                  type: 'crowdfunding',
+                  type: 'event',
                   location: 'Paris, France',
-                  minContribution: 0.1,
-                  fundingType: 'flexible'
+                  tickets: [
+                      { id: 1, name: 'General Admission', price: 0.8, quantity: 400, sold: 0 },
+                      { id: 2, name: 'Builder Pass', price: 1.2, quantity: 200, sold: 0 },
+                      { id: 3, name: 'VIP', price: 2.0, quantity: 50, sold: 0 }
+                  ]
               }
         ];
 
@@ -3390,12 +3402,20 @@
 
         // === WALLET MANAGEMENT ===
         async function toggleWallet() {
-            if (walletAddress) {
-                if (await customConfirm('Do you want to disconnect your wallet?')) {
-                    await disconnectWallet();
+            provider = getProvider();
+            if (!walletAddress) {
+                if (!provider) {
+                    window.open('https://phantom.app/', '_blank', 'noopener');
+                    const installLink = '<a href="https://phantom.app/" target="_blank" rel="noopener noreferrer">Install Phantom</a>';
+                    showMessage('createMessages', 'error', `No wallet detected. ${installLink}`);
+                    showMessage('exploreMessages', 'error', `No wallet detected. ${installLink}`);
+                    return;
                 }
-            } else {
                 await connectWallet();
+                return;
+            }
+            if (await customConfirm('Do you want to disconnect your wallet?')) {
+                await disconnectWallet();
             }
         }
 
@@ -3417,8 +3437,11 @@
         async function connectWallet() {
             provider = getProvider();
             if (!provider) {
-                showMessage('createMessages', 'error', 'Please install the Phantom extension');
-                showMessage('exploreMessages', 'error', 'Please install the Phantom extension');
+                const installLink = '<a href="https://phantom.app/" target="_blank" rel="noopener noreferrer">Install Phantom</a>';
+                const phantomLogo = '<span style="display:inline-flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3c4.97 0 9 3.582 9 8v3.5c0 3.59-2.91 6.5-6.5 6.5H9.5C5.91 21 3 18.09 3 14.5V11c0-4.418 4.03-8 9-8z" fill="#8a2be2" opacity="0.3"/><path d="M9 10.5c0-.828.672-1.5 1.5-1.5S12 9.672 12 10.5 11.328 12 10.5 12 9 11.328 9 10.5zm4.5 0c0-.828.672-1.5 1.5-1.5S16.5 9.672 16.5 10.5 15.828 12 15 12s-1.5-.672-1.5-1.5zM8.5 14.5c.7 1.2 2.07 2 3.5 2s2.8-.8 3.5-2" stroke="#8a2be2" stroke-width="1.5" stroke-linecap="round"/></svg>Phantom</span>';
+                const text = `No wallet detected. This app uses ${phantomLogo}. ${installLink} to continue.`;
+                showMessage('createMessages', 'error', text, 8000);
+                showMessage('exploreMessages', 'error', text, 8000);
                 return;
             }
 
@@ -3483,6 +3506,7 @@
 
             connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
+            // Build transfer transaction
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
                     fromPubkey: provider.publicKey,
@@ -3490,10 +3514,14 @@
                     lamports
                 })
             );
+
             transaction.feePayer = provider.publicKey;
             const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
-            const { signature } = await provider.signAndSendTransaction(transaction);
+
+            // Sign in Phantom, send via our connection to ensure correct cluster
+            const signedTx = await provider.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signedTx.serialize());
             await connection.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, 'confirmed');
 
             return signature;
@@ -3504,15 +3532,53 @@
             const text = document.getElementById('walletText');
             const walletInput = document.getElementById('userWallet');
 
+            const phantomAvailable = !!getProvider();
             if (walletAddress) {
                 btn.classList.add('connected');
                 text.textContent = truncateAddress(walletAddress);
                 if (walletInput) walletInput.value = walletAddress;
+                // Fetch and show balance
+                try {
+                    const conn = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                    conn.getBalance(new solanaWeb3.PublicKey(walletAddress)).then(lamports => {
+                        const sol = (lamports / solanaWeb3.LAMPORTS_PER_SOL).toFixed(3);
+                        text.textContent = `${truncateAddress(walletAddress)} • ${sol} SOL`;
+                    }).catch(() => {});
+                } catch (_) {}
             } else {
                 btn.classList.remove('connected');
-                text.textContent = 'Connect Phantom Wallet';
+                text.textContent = phantomAvailable ? 'Connect Phantom Wallet' : 'Install Phantom Wallet';
                 if (walletInput) walletInput.value = '';
             }
+
+            ensurePhantomBanner();
+        }
+
+        function ensurePhantomBanner() {
+            try {
+                const existing = document.getElementById('phantomBanner');
+                const hasWallet = !!walletAddress;
+                const phantomAvailable = !!getProvider();
+                if (hasWallet || phantomAvailable) {
+                    if (existing) existing.remove();
+                    return;
+                }
+                if (existing) return;
+
+                const banner = document.createElement('div');
+                banner.id = 'phantomBanner';
+                banner.style.cssText = 'position:sticky;top:0;z-index:50; background: rgba(138,43,226,0.12); border:1px solid rgba(138,43,226,0.35); color:#e9d5ff; padding:10px 14px; display:flex; align-items:center; gap:10px; border-radius:10px; margin:12px 0;';
+                banner.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3c4.97 0 9 3.582 9 8v3.5c0 3.59-2.91 6.5-6.5 6.5H9.5C5.91 21 3 18.09 3 14.5V11c0-4.418 4.03-8 9-8z" fill="#8a2be2" opacity="0.35"/>
+                        <path d="M9 10.5c0-.828.672-1.5 1.5-1.5S12 9.672 12 10.5 11.328 12 10.5 12 9 11.328 9 10.5zm4.5 0c0-.828.672-1.5 1.5-1.5S16.5 9.672 16.5 10.5 15.828 12 15 12s-1.5-.672-1.5-1.5zM8.5 14.5c.7 1.2 2.07 2 3.5 2s2.8-.8 3.5-2" stroke="#8a2be2" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <div style="flex:1">No wallet detected. This app uses <strong>Phantom</strong> for payments and tickets.</div>
+                    <a href="https://phantom.app/" target="_blank" rel="noopener noreferrer" style="background:#8a2be2;color:white;padding:8px 12px;border-radius:8px;text-decoration:none;">Install Phantom</a>
+                `;
+                const container = document.querySelector('.container');
+                if (container) container.prepend(banner);
+            } catch (_) {}
         }
 
         // === EVENT MANAGEMENT ===
@@ -3747,6 +3813,8 @@
                     displayEvents();
                 });
             }
+
+            ensurePhantomBanner();
         });
 
         // === PREMIUM ASTEROID SYSTEM ===
@@ -3816,6 +3884,32 @@
             }
         `;
         document.head.appendChild(asteroidStyles);
+
+        // Logo comet hover animation
+        (function initCometHover() {
+            const logo = document.getElementById('cometLogo');
+            if (!logo) return;
+            let tailPulse;
+            logo.addEventListener('mouseenter', () => {
+                logo.style.transform = 'translateY(-2px) rotate(-3deg) scale(1.05)';
+                logo.style.filter = 'drop-shadow(0 0 8px var(--cosmic-gold))';
+                const tail = logo.querySelector('path[stroke^="url(#cometTailGradient)"]');
+                if (tail) {
+                    let opacity = 0.6;
+                    tailPulse = setInterval(() => {
+                        opacity = opacity > 0.8 ? 0.5 : opacity + 0.05;
+                        tail.setAttribute('opacity', opacity.toFixed(2));
+                    }, 60);
+                }
+            });
+            logo.addEventListener('mouseleave', () => {
+                logo.style.transform = '';
+                logo.style.filter = '';
+                const tails = logo.querySelectorAll('path[stroke^="url(#cometTailGradient)"]');
+                tails.forEach((t, i) => t.setAttribute('opacity', i === 0 ? '1' : '0.6'));
+                if (tailPulse) clearInterval(tailPulse);
+            });
+        })();
 
         // Wallet account changes handled via the Phantom provider (see initialization)
 
@@ -4158,6 +4252,18 @@
                 connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
                 const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
+                // Pre-check buyer balance
+                try {
+                    const buyerBalance = await connection.getBalance(new solanaWeb3.PublicKey(walletAddress));
+                    if (buyerBalance < lamports) {
+                        throw new Error('Insufficient funds');
+                    }
+                } catch (e) {
+                    showMessage('exploreMessages', 'error', 'Insufficient SOL for this purchase');
+                    btn.innerHTML = 'Buy ticket';
+                    btn.disabled = false;
+                    return;
+                }
                 const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
 
                 btn.innerHTML = 'Verifying...';
@@ -4176,7 +4282,8 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Server error');
 
-                showMessage('exploreMessages', 'success', `✅ Purchased ${window.selectedQuantity} ${ticket.name} ticket(s) for "${event.title}"`);
+                const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+                showMessage('exploreMessages', 'success', `✅ Purchased ${window.selectedQuantity} ${ticket.name} ticket(s) for "${event.title}" — <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">View on Solana Explorer</a>`);
                 closeTicketModal();
                 loadEvents();
 
