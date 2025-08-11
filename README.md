@@ -140,4 +140,4 @@ The generated site serves the dApp on the root path and documentation under `/do
    - Récupérer l'URL publique du service et la reporter dans `config.js` pour exposer le backend au frontend.
 
 ## License
-Distributed under the ISC license.
+Distributed under the ISC License. See [LICENSE](LICENSE) for details.
