@@ -32,7 +32,7 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
    ```bash
    npm start
    ```
-   This serves both the API and the `Evento.html` interface at `http://localhost:3000`.
+   This serves both the API and the `docs/index.html` interface at `http://localhost:3000`.
 
 4. **Test ticket purchases**
    - Connect your Phantom wallet to the `devnet`.
@@ -65,19 +65,30 @@ An advanced version of the API is available in the `backend/` folder.
    The API also listens on `http://localhost:3000`.
 
 4. **Consume the API**
-   The `Evento.html` interface can be used as-is. Exposed routes include `GET /events`, `POST /events`, `POST /events/:id/tickets`…
+   The `docs/index.html` interface can be used as-is. Exposed routes include `GET /events`, `POST /events`, `POST /events/:id/tickets`…
 
 ## Project Structure
 
 ```
 .
-├── Evento.html          # Web interface
+├── docs/
+│   └── index.html       # Web interface served and published via GitHub Pages
 ├── server.js            # Minimal API (Express + in-memory storage)
 ├── package.json
 └── backend/             # Full API with MongoDB
     ├── models/          # Mongoose schemas
-    ├── routes/          # Express routes
-    └── server.js        # Entry point for the full API
+   ├── routes/          # Express routes
+   └── server.js        # Entry point for the full API
+
+## Deploying to GitHub Pages
+
+The static front-end lives in the `docs/` directory so it can be published directly.
+To deploy:
+
+1. Push your changes to the `main` branch.
+2. In your repository settings on GitHub, enable **GitHub Pages** and select the
+   `main` branch with the `/docs` folder as the source.
+3. Your site will be available at `https://<username>.github.io/<repository>/`.
 ```
 
 ## Development

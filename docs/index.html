@@ -3168,7 +3168,8 @@
         // === CONFIGURATION ===
         const SOLANA_NETWORK = 'https://api.devnet.solana.com';
 
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE =
+            window.location.hostname === 'localhost' ? 'http://localhost:3000' : '.';
        
         // === ÉTAT GLOBAL ===
         let walletAddress = null;
@@ -3488,11 +3489,13 @@
         async function loadEvents() {
             try {
                 const res = await fetch(`${API_BASE}/events`);
+                if (!res.ok) throw new Error('Failed to fetch events');
                 events = await res.json();
-                displayEvents();
             } catch (error) {
                 console.error('Error loading events:', error);
+                events = defaultEvents;
             }
+            displayEvents();
         }
 
         function saveEvents() {
