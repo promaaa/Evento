@@ -479,6 +479,7 @@
         }
 
         .nav-item {
+
             position: relative;
             padding: 8px 12px;
             color: var(--cosmic-platinum);
@@ -489,28 +490,10 @@
             transition: color var(--transition-fast);
         }
 
-        .nav-item::after {
-            content: '';
-            position: absolute;
-            left: 12px;
-            right: 12px;
-            bottom: 4px;
-            height: 2px;
-            background: var(--gradient-comet);
-            border-radius: 2px;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform var(--transition-fast);
-        }
-
         .nav-item:hover,
         .nav-item.active {
             color: var(--cosmic-gold);
-        }
 
-        .nav-item:hover::after,
-        .nav-item.active::after {
-            transform: scaleX(1);
         }
 
         .wallet-connect {
@@ -3036,13 +3019,15 @@
                 <a href="#" class="logo" onclick="showSection('home')">
                     <svg class="logo-icon" viewBox="0 0 24 24" aria-hidden="true">
                         <defs>
-                            <linearGradient id="cometGradient" x1="2" y1="22" x2="16" y2="8" gradientUnits="userSpaceOnUse">
-                                <stop offset="0" style="stop-color: var(--cosmic-gold);" />
-                                <stop offset="1" style="stop-color: var(--cosmic-amber);" />
+                            <linearGradient id="cometGradient" x1="3" y1="21" x2="18" y2="6" gradientUnits="userSpaceOnUse">
+                                <stop offset="0" stop-color="var(--cosmic-amber)" />
+                                <stop offset="1" stop-color="var(--cosmic-gold)" />
                             </linearGradient>
                         </defs>
-                        <circle cx="16" cy="8" r="4" fill="url(#cometGradient)" />
-                        <path d="M2 22L14 10" stroke="url(#cometGradient)" stroke-width="4" stroke-linecap="round" />
+                        <circle cx="18" cy="6" r="4" fill="url(#cometGradient)" />
+                        <path d="M3 21c5-5 9-8 15-12" stroke="url(#cometGradient)" stroke-width="4" stroke-linecap="round" />
+                        <path d="M6 22c4-4 7-6 13-10" stroke="url(#cometGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+
                     </svg>
                     <span class="logo-text">Evento</span>
                 </a>
