@@ -3398,6 +3398,8 @@
         // === CONFIGURATION ===
         const SOLANA_NETWORK = 'https://api.devnet.solana.com';
 
+        const API_BASE = 'http://localhost:3000';
+       
         // === ÉTAT GLOBAL ===
         let walletAddress = null;
         let connection = null;
@@ -3598,18 +3600,18 @@
         }
 
         // === GESTION DES ÉVÉNEMENTS ===
-        function loadEvents() {
-            const saved = localStorage.getItem('evento-events');
-            if (saved) {
-                events = JSON.parse(saved);
-            } else {
-                events = [...defaultEvents];
-                saveEvents();
+        async function loadEvents() {
+            try {
+                const res = await fetch(`${API_BASE}/events`);
+                events = await res.json();
+                displayEvents();
+            } catch (error) {
+                console.error('Erreur chargement événements:', error);
             }
         }
 
         function saveEvents() {
-            localStorage.setItem('evento-events', JSON.stringify(events));
+            // Stockage géré côté serveur
         }
 
         function displayEvents() {
@@ -3729,36 +3731,36 @@
 
             try {
                 const newEvent = {
-                    id: Date.now().toString(),
                     title: eventData.title.trim(),
                     organization: eventData.organization.trim(),
                     goal: parseSOL(eventData.goal),
-                    raised: 0,
                     description: eventData.description.trim(),
                     imageUrl: eventData.imageUrl?.trim() || '',
                     beneficiaryWallet: walletAddress,
                     creatorWallet: walletAddress,
-                    createdAt: new Date().toISOString()
+                    tickets: eventData.tickets || [],
+                    date: eventData.date
                 };
 
-                // Validation
                 if (!newEvent.title || !newEvent.organization || !newEvent.description) {
                     throw new Error('All required fields must be completed');
                 }
-
                 if (newEvent.goal <= 0) {
                     throw new Error('Target amount must be positive');
                 }
 
-                events.unshift(newEvent);
-                saveEvents();
+                const res = await fetch(`${API_BASE}/events`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newEvent)
+                });
+                if (!res.ok) {
+                    throw new Error('Server error');
+                }
 
-                // Réinitialiser le formulaire
                 document.getElementById('eventForm').reset();
-                
                 showMessage('createMessages', 'success', `Protocol "${newEvent.title}" deployed successfully`);
-                
-                console.log('✅ Protocol created:', newEvent);
+                loadEvents();
 
             } catch (error) {
                 console.error('❌ Creation error:', error);
@@ -4297,8 +4299,24 @@
                 saveEvents();
                 displayEvents();
 
+
+                document.getElementById('buyTicketBtn').innerHTML = 'Achat en cours...';
+                document.getElementById('buyTicketBtn').disabled = true;
+
+                const res = await fetch(`${API_BASE}/events/${event.id}/tickets`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ticketIndex: window.selectedTicketIndex,
+                        quantity: window.selectedQuantity,
+                        buyer: walletAddress
+                    })
+                });
+                if (!res.ok) throw new Error('Server error');
+
                 showMessage('createMessages', 'success', `✅ ${window.selectedQuantity} ticket(s) acheté(s) avec succès !`);
                 closeTicketModal();
+                loadEvents();
 
             } catch (error) {
                 console.error('Erreur achat:', error);
@@ -4324,6 +4342,13 @@
         document.addEventListener('click', function(e) {
             const modal = document.getElementById('ticketModal');
             if (modal && e.target === modal) {
+                closeTicketModal();
+            }
+        });
+
+        // Fermer le modal avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
                 closeTicketModal();
             }
         });
