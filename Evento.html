@@ -3376,7 +3376,13 @@
 
         async function payWithPhantom(toAddress, lamports) {
             provider = provider || getProvider();
-            if (!provider) throw new Error('Wallet not connected');
+            if (!provider || !provider.isPhantom) throw new Error('Phantom Wallet required');
+
+            if (!provider.isConnected) {
+                await connectWallet();
+            }
+            if (!provider.isConnected) throw new Error('Wallet connection required');
+
             connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
             const transaction = new solanaWeb3.Transaction().add(
@@ -3675,13 +3681,12 @@
             // Récupérer l'état du wallet si déjà connecté
             provider = getProvider();
             if (provider) {
-                try {
-                    const resp = await provider.connect({ onlyIfTrusted: true });
-                    walletAddress = resp.publicKey.toString();
+                // If the wallet was already connected, restore the session
+                if (provider.isConnected) {
+                    walletAddress = provider.publicKey.toString();
+
                     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                     updateWalletUI();
-                } catch (e) {
-                    // Wallet not yet connected
                 }
 
                 provider.on('accountChanged', (publicKey) => {
