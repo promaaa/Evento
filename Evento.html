@@ -4147,7 +4147,11 @@
         }
 
         async function buyTicket() {
-            if (!walletAddress || window.selectedTicketIndex === null) return;
+            if (!walletAddress) {
+                showMessage('exploreMessages', 'error', 'Please connect your wallet first');
+                return;
+            }
+            if (window.selectedTicketIndex === null) return;
 
             const event = window.selectedEvent;
             const ticket = event.tickets[window.selectedTicketIndex];
