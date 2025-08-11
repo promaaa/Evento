@@ -24,8 +24,8 @@ const sessions = new Map();
 const events = [
   {
     id: 1,
-    title: '42 School Hackathon',
-    organization: '42 School',
+    title: 'Ecole 42 Hackathon',
+    organization: 'Ecole 42',
     goal: 5000,
     raised: 1500,
     description:
@@ -68,7 +68,7 @@ const events = [
     goal: 10000,
     raised: 4500,
     description:
-      'The largest student gala in Europe organized by Ecole Polytechnique.',
+      'The largest student festival in France organized by Ecole Polytechnique.',
     imageUrl:
       'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
 
