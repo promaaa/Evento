@@ -156,20 +156,28 @@ app.post('/events/:id/tickets', async (req, res) => {
     const tx = await connection.getParsedTransaction(signature, {
       commitment: 'confirmed',
     });
-    if (!tx) {
-      return res.status(400).json({ error: 'Transaction not found' });
+    if (!tx || tx.meta?.err) {
+      return res.status(400).json({ error: 'Transaction not confirmed' });
     }
+
     const transferIx = tx.transaction.message.instructions.find(
       (ix) => ix.program === 'system' && ix.parsed?.type === 'transfer'
     );
     if (!transferIx) {
       return res.status(400).json({ error: 'No transfer instruction' });
     }
-    const destination = transferIx.parsed.info.destination;
-    const amountLamports = transferIx.parsed.info.lamports;
+
+    const { destination, lamports, source } = transferIx.parsed.info;
     const expectedLamports = Math.round(ticket.price * quantity * LAMPORTS_PER_SOL);
-    if (destination !== event.beneficiaryWallet || amountLamports < expectedLamports) {
-      return res.status(400).json({ error: 'Payment details mismatch' });
+
+    if (source !== buyer) {
+      return res.status(400).json({ error: 'Source wallet mismatch' });
+    }
+    if (destination !== event.beneficiaryWallet) {
+      return res.status(400).json({ error: 'Incorrect destination wallet' });
+    }
+    if (lamports < expectedLamports) {
+      return res.status(400).json({ error: 'Insufficient amount transferred' });
     }
   } catch (err) {
     console.error('Transaction verification failed', err);
