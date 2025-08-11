@@ -39,6 +39,7 @@ const events = [
       "Tournoi sportif inter-écoles avec des disciplines variées et une ambiance festive.",
     imageUrl:
       'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80',
+
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
@@ -58,6 +59,7 @@ const events = [
       "Le plus grand gala étudiant d'Europe organisé par l'École Polytechnique.",
     imageUrl:
       'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
