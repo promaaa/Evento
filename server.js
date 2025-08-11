@@ -24,8 +24,8 @@ const events = [
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Pass Journée', price: 15, quantity: 100, sold: 20 },
-      { id: 2, name: 'Pass Week-end', price: 25, quantity: 80, sold: 10 }
+      { id: 1, name: 'Pass Journée', price: 0.5, quantity: 100, sold: 20 },
+      { id: 2, name: 'Pass Week-end', price: 0.9, quantity: 80, sold: 10 }
     ],
     contributions: []
   },
@@ -44,8 +44,8 @@ const events = [
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Pass Spectateur', price: 10, quantity: 200, sold: 50 },
-      { id: 2, name: 'Pass Compétiteur', price: 20, quantity: 150, sold: 30 }
+      { id: 1, name: 'Pass Spectateur', price: 0.3, quantity: 200, sold: 50 },
+      { id: 2, name: 'Pass Compétiteur', price: 0.6, quantity: 150, sold: 30 }
     ],
     contributions: []
   },
@@ -64,8 +64,8 @@ const events = [
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Entrée Standard', price: 30, quantity: 300, sold: 120 },
-      { id: 2, name: 'Entrée VIP', price: 60, quantity: 100, sold: 40 }
+      { id: 1, name: 'Entrée Standard', price: 1.2, quantity: 300, sold: 120 },
+      { id: 2, name: 'Entrée VIP', price: 2.5, quantity: 100, sold: 40 }
     ],
     contributions: []
   }
