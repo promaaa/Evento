@@ -48,6 +48,13 @@ Local Development API (Optional)
   - GET /events – list events
   - POST /events/:id/tickets – verify the provided transaction signature and update ticket sales
 
+Remote Backend
+- To point the app to a hosted API (Render, Railway, etc.), edit `config.js` at the project root.
+- Replace `<URL_API_DISTANTE>` with your backend URL, for example:
+  ```js
+  window.API_BASE = "https://your-backend.onrender.com";
+  ```
+
 Customizing Events
 - Edit default events in `index.html` (look for `defaultEvents`).
 - For the Node server list, edit the `events` array in `server.js`.
