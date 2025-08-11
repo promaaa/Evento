@@ -2858,6 +2858,21 @@
             line-height: 1.6;
         }
 
+        .spinner {
+            border: 4px solid var(--cosmic-silver);
+            border-top: 4px solid var(--cosmic-gold);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .hackathon-note {
             margin-top: 2px;
             color: var(--muted-foreground);
@@ -4265,6 +4280,9 @@
             const ticket = event.tickets[window.selectedTicketIndex];
             const total = ticket.price * window.selectedQuantity;
 
+            const btn = document.getElementById('buyTicketBtn');
+            let spinner;
+
             try {
                 const confirmed = await customConfirm(
                     `Confirm purchase:\n\n` +
@@ -4276,9 +4294,11 @@
 
                 if (!confirmed) return;
 
-                const btn = document.getElementById('buyTicketBtn');
+                spinner = document.createElement('div');
+                spinner.className = 'spinner';
                 btn.innerHTML = 'Signing...';
                 btn.disabled = true;
+                btn.after(spinner);
 
                 provider = provider || getProvider();
                 if (!provider) throw new Error('Wallet not connected');
@@ -4295,6 +4315,7 @@
                     showMessage('exploreMessages', 'error', 'Insufficient SOL for this purchase');
                     btn.innerHTML = 'Buy ticket';
                     btn.disabled = false;
+                    if (spinner) spinner.remove();
                     return;
                 }
                 const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
@@ -4320,6 +4341,10 @@
                 closeTicketModal();
                 loadEvents();
 
+                if (spinner) spinner.remove();
+                btn.innerHTML = 'Buy ticket';
+                btn.disabled = false;
+
             } catch (error) {
                 console.error('Purchase error:', error);
                 if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
@@ -4327,7 +4352,7 @@
                 } else {
                     showMessage('exploreMessages', 'error', 'Error during purchase: ' + error.message);
                 }
-                const btn = document.getElementById('buyTicketBtn');
+                if (spinner) spinner.remove();
                 btn.innerHTML = 'Buy ticket';
                 btn.disabled = false;
             }
