@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build:pages": "mkdir -p dist/docs && cp index.html dist/ && cp config.js dist/ 2>/dev/null || true && cp backend/README.md dist/backend.md && cp docs/*.md dist/docs/ && cp docs/_config.yml dist/_config.yml && ls -R dist"
   },
   "keywords": [],
   "author": "Evento Team",

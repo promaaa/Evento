@@ -119,6 +119,11 @@ contents of `docs/`. To publish:
 
 1. Enable GitHub Pages in the repository settings and choose **GitHub Actions** as the source.
 2. Push to `main` and the site will automatically deploy to the configured Pages URL.
+3. To preview what the workflow produces, run:
+   ```bash
+   npm run build:pages
+   ```
+   This script creates a `dist/` folder with `index.html`, `config.js`, backend documentation, and the Markdown files under `docs/`.
 
 The generated site serves the dApp on the root path and documentation under `/docs`.
 
@@ -138,6 +143,9 @@ The generated site serves the dApp on the root path and documentation under `/do
 3. **Héberger le backend**
    - Déployer l'API (`server.js` ou `backend/`) sur un service compatible tel que Render ou Railway.
    - Récupérer l'URL publique du service et la reporter dans `config.js` pour exposer le backend au frontend.
+
+4. **Générer le site statique localement**
+   - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, `config.js` et la documentation.
 
 ## License
 Distributed under the ISC License. See [LICENSE](LICENSE) for details.
