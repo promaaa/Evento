@@ -3175,6 +3175,7 @@
         let connection = null;
         let provider = null;
         let events = [];
+        let allEvents = [];
 
         // Default events loaded when no data available from server
         const defaultEvents = [
@@ -3489,10 +3490,13 @@
             try {
                 const res = await fetch(`${API_BASE}/events`);
                 events = await res.json();
-                displayEvents();
+                allEvents = [...events];
             } catch (error) {
                 console.error('Error loading events:', error);
+                events = [...defaultEvents];
+                allEvents = [...defaultEvents];
             }
+            displayEvents();
         }
 
         function saveEvents() {
@@ -3595,6 +3599,23 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // Enable search in Explore section
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                if (!query) {
+                    events = [...allEvents];
+                } else {
+                    events = allEvents.filter(ev =>
+                        ev.title.toLowerCase().includes(query) ||
+                        ev.organization.toLowerCase().includes(query)
+                    );
+                }
+                displayEvents();
+            });
         }
 
         // === EVENT CREATION ===
