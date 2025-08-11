@@ -3768,7 +3768,7 @@
 
                             <div class="project-actions">
                                 ${isEvent ? `
-                                      <button class="btn btn-primary" type="button" onclick="showTickets(${event.id})">
+                                      <button class="btn btn-primary" type="button" onclick="window.location.href='tickets.html?eventId=${event.id}'">
                                           Buy tickets
                                       </button>
                                 ` : `

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Tickets</title>
+    <script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+    <script src="config.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 20px;
+        }
+        .ticket-option {
+            border: 1px solid #444;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .ticket-option.selected {
+            border-color: #3b82f6;
+            background-color: #1e3a8a;
+        }
+        .ticket-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .quantity-selector {
+            margin-top: 15px;
+        }
+        .total-display {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #3b82f6;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="pageTitle">Buy tickets</h1>
+    <div id="ticketOptions"></div>
+    <div id="selectedTicketInfo"></div>
+    <button id="buyTicketBtn" disabled>Buy ticket</button>
+
+    <script>
+    const SOLANA_NETWORK = 'https://api.devnet.solana.com';
+    let selectedEvent;
+    let selectedTicketIndex = null;
+    let selectedQuantity = 1;
+    let walletAddress = null;
+    let provider, connection;
+
+    function formatSOL(value) {
+        return (Math.round(value * 100) / 100).toString();
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('eventId');
+
+    async function init() {
+        if (!eventId) {
+            document.getElementById('ticketOptions').innerText = 'No event specified';
+            return;
+        }
+        try {
+            const res = await fetch(`${API_BASE}/events`);
+            const events = await res.json();
+            selectedEvent = events.find(e => e.id == eventId);
+            if (!selectedEvent || !selectedEvent.tickets) {
+                document.getElementById('ticketOptions').innerText = 'Event not found or no tickets';
+                return;
+            }
+            document.getElementById('pageTitle').textContent = `Tickets - ${selectedEvent.title}`;
+            renderTickets();
+        } catch (e) {
+            document.getElementById('ticketOptions').innerText = 'Error loading tickets';
+        }
+    }
+
+    function renderTickets() {
+        const ticketOptionsHtml = selectedEvent.tickets.map((ticket, index) => {
+            const available = ticket.quantity - (ticket.sold || 0);
+            const isAvailable = available > 0;
+            return `<div class="ticket-option ${!isAvailable ? 'disabled' : ''}" onclick="${isAvailable ? `selectTicket(${index})` : ''}" data-ticket="${index}">
+                <div><strong>${ticket.name}</strong> - ${formatSOL(ticket.price)} SOL</div>
+                <div>${ticket.description || ''}</div>
+                <div>${available > 0 ? `${available} tickets available` : 'Sold out'}</div>
+            </div>`;
+        }).join('');
+        document.getElementById('ticketOptions').innerHTML = ticketOptionsHtml;
+    }
+
+    function selectTicket(ticketIndex) {
+        document.querySelectorAll('.ticket-option').forEach(opt => opt.classList.remove('selected'));
+        const el = document.querySelector(`[data-ticket="${ticketIndex}"]`);
+        el.classList.add('selected');
+        selectedTicketIndex = ticketIndex;
+        selectedQuantity = 1;
+        const ticket = selectedEvent.tickets[ticketIndex];
+        const available = ticket.quantity - (ticket.sold || 0);
+        document.getElementById('selectedTicketInfo').innerHTML = `
+            <div class="quantity-selector">
+                Quantity: <input type="number" id="quantityInput" value="1" min="1" max="${available}" onchange="updateQuantity(this.value)">
+            </div>
+            <div class="total-display">Total: <span id="totalAmount">${formatSOL(ticket.price)}</span> SOL</div>
+        `;
+        document.getElementById('buyTicketBtn').disabled = false;
+    }
+
+    function updateQuantity(qty) {
+        const ticket = selectedEvent.tickets[selectedTicketIndex];
+        const available = ticket.quantity - (ticket.sold || 0);
+        const quantity = Math.max(1, Math.min(parseInt(qty) || 1, available));
+        selectedQuantity = quantity;
+        document.getElementById('quantityInput').value = quantity;
+        const total = ticket.price * quantity;
+        document.getElementById('totalAmount').textContent = formatSOL(total);
+    }
+
+    document.getElementById('buyTicketBtn').onclick = buyTicket;
+
+    async function buyTicket() {
+        if (selectedTicketIndex === null) return;
+        try {
+            provider = provider || getProvider();
+            if (!provider) { alert('Wallet not found'); return; }
+            if (!walletAddress) {
+                const resp = await provider.connect();
+                walletAddress = resp.publicKey.toString();
+            }
+            connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+            const ticket = selectedEvent.tickets[selectedTicketIndex];
+            const total = ticket.price * selectedQuantity;
+            const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
+            await payWithPhantom(selectedEvent.beneficiaryWallet, lamports);
+            const res = await fetch(`${API_BASE}/events/${selectedEvent.id}/tickets`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ticketIndex: selectedTicketIndex,
+                    quantity: selectedQuantity,
+                    buyer: walletAddress
+                })
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Server error');
+            }
+            alert('Tickets purchased successfully');
+        } catch (e) {
+            console.error(e);
+            alert('Purchase failed: ' + e.message);
+        }
+    }
+
+    function getProvider() {
+        if ('solana' in window) {
+            const provider = window.solana;
+            if (provider.isPhantom) {
+                return provider;
+            }
+        }
+        window.open('https://phantom.app/', '_blank');
+    }
+
+    async function payWithPhantom(toPubkey, lamports) {
+        const transaction = new solanaWeb3.Transaction().add(
+            solanaWeb3.SystemProgram.transfer({
+                fromPubkey: provider.publicKey,
+                toPubkey: new solanaWeb3.PublicKey(toPubkey),
+                lamports
+            })
+        );
+        transaction.feePayer = provider.publicKey;
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        const signed = await provider.signTransaction(transaction);
+        const signature = await connection.sendRawTransaction(signed.serialize());
+        await connection.confirmTransaction(signature);
+        return signature;
+    }
+
+    init();
+    </script>
+</body>
+</html>
