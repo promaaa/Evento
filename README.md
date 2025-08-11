@@ -36,11 +36,12 @@ Local Development API (Optional)
   - POST /events/:id/tickets – verify the provided transaction signature and update ticket sales
 
 Remote Backend
-- To point the app to a hosted API (Render, Railway, etc.), edit `config.js` at the project root.
-- Replace `<URL_API_DISTANTE>` with your backend URL, for example:
+- To point the app to a hosted API (Render, Railway, etc.), create `config.js` at the project root.
+- Example:
   ```js
   window.API_BASE = "https://your-backend.onrender.com";
   ```
+- If `config.js` is absent, the app runs fully static using browser storage.
 
 Customizing Events
 - Edit default events in `index.html` (look for `defaultEvents`).
@@ -103,15 +104,14 @@ A richer API that persists events and contributions lives under [`backend/`](bac
 ## GitHub Pages
 .github/workflows/pages.yml builds the static site. Publish by:
 
-
 - Enable GitHub Pages in repository settings and choose **GitHub Actions** as the source.
-- Add `config.js` at the project root with `window.API_BASE = "https://your-backend.example";` and reference it in `index.html`.
+- (Optional) If you have a backend, add `config.js` at the project root with `window.API_BASE = "https://your-backend.example";`.
 - Push to `main` to trigger the workflow and deploy.
 
 The generated site serves the dApp at the root and documentation under `/docs`.
 
 4. **Générer le site statique localement**
-   - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, `config.js` et la documentation.
+   - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, la documentation et, si présent, `config.js`.
 
 ## License
 Distributed under the ISC License. See [LICENSE](LICENSE) for details.
