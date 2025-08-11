@@ -23,7 +23,7 @@ jobs:
         run: |
           mkdir -p dist/docs
           cp index.html dist/
-          cp config.js dist/
+          if [ -f config.js ]; then cp config.js dist/; fi
           cp backend/README.md dist/backend.md
           cp docs/*.md dist/docs/
           cp docs/_config.yml dist/_config.yml
