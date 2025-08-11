@@ -3472,6 +3472,25 @@
             return null;
         }
 
+        async function promptPhantomUnlock() {
+            provider = provider || getProvider();
+            if (!provider) return null;
+
+            try {
+                const res = await provider.connect({ onlyIfTrusted: false });
+                return res;
+            } catch (error) {
+                console.error('❌ Phantom unlock error:', error);
+                const msg =
+                    error && (error.message?.includes('User rejected') || error.code === 4001)
+                        ? 'Connection denied'
+                        : 'Connection failed';
+                showMessage('createMessages', 'error', msg);
+                showMessage('exploreMessages', 'error', msg);
+                return null;
+            }
+        }
+
         async function connectWallet() {
             provider = getProvider();
             if (!provider) {
@@ -3486,7 +3505,8 @@
             }
 
             try {
-                const response = await provider.connect();
+                const response = await promptPhantomUnlock();
+                if (!response) return;
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
@@ -3505,12 +3525,6 @@
                 }
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
-                const msg =
-                    error && (error.message?.includes('User rejected') || error.code === 4001)
-                        ? 'Connection denied'
-                        : 'Connection failed';
-                showMessage('createMessages', 'error', msg);
-                showMessage('exploreMessages', 'error', msg);
             }
         }
 
@@ -3536,13 +3550,10 @@
             provider = provider || getProvider();
             if (!provider || !provider.isPhantom) throw new Error('Please connect your Phantom wallet');
 
-            if (!provider.isConnected) {
-                const response = await provider.connect();
-                walletAddress = response.publicKey.toString();
-                updateWalletUI();
-            } else {
-                walletAddress = provider.publicKey.toString();
-            }
+            const response = await promptPhantomUnlock();
+            if (!response) throw new Error('Wallet connection required');
+            walletAddress = provider.publicKey.toString();
+            updateWalletUI();
 
             connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
@@ -3842,14 +3853,15 @@
             // Attempt to reconnect Phantom if already trusted
             provider = getProvider();
             if (provider) {
-                try {
-                    const resp = await provider.connect({ onlyIfTrusted: true });
-                    walletAddress = resp.publicKey.toString();
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                    updateWalletUI();
-                } catch (err) {
-                    console.log('Auto-connect skipped', err);
-                }
+                // Auto-connect removed to avoid silent reconnection
+                // try {
+                //     const resp = await provider.connect({ onlyIfTrusted: true });
+                //     walletAddress = resp.publicKey.toString();
+                //     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                //     updateWalletUI();
+                // } catch (err) {
+                //     console.log('Auto-connect skipped', err);
+                // }
 
                 provider.on('accountChanged', (publicKey) => {
                     if (publicKey) {
