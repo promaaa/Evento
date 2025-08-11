@@ -3392,17 +3392,53 @@
     </div>
 
     <!-- Solana Web3.js -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-    
+    <script src="https://unpkg.com/@solana/web3.js@1.78.0/lib/index.iife.min.js"></script>
+
     <script>
         // === CONFIGURATION ===
         const SOLANA_NETWORK = 'https://api.devnet.solana.com';
+
         const API_BASE = 'http://localhost:3000';
-        
+       
         // === ÉTAT GLOBAL ===
         let walletAddress = null;
         let connection = null;
         let events = [];
+
+        // Wallet adapter (Phantom)
+        const walletAdapterPromise = import('https://unpkg.com/@solana/wallet-adapter-phantom@0.9.25/lib/index.esm.js')
+            .then(({ PhantomWalletAdapter }) => {
+                const adapter = new PhantomWalletAdapter();
+
+                adapter.on('connect', async () => {
+                    walletAddress = adapter.publicKey.toBase58();
+                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                    updateWalletUI();
+                    displayEvents();
+                    try {
+                        await fetch('/auth/wallet', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ publicKey: walletAddress })
+                        });
+                    } catch (e) {
+                        console.error('Auth failed', e);
+                    }
+                });
+
+                adapter.on('disconnect', () => {
+                    walletAddress = null;
+                    connection = null;
+                    updateWalletUI();
+                    displayEvents();
+                });
+
+                return adapter;
+            })
+            .catch(err => {
+                console.error('Wallet adapter loading failed', err);
+                return null;
+            });
 
         // Default events with Point Gamma and Challenge Centrale Lyon
         const defaultEvents = [
@@ -3513,40 +3549,40 @@
         }
 
         async function connectWallet() {
-            if (!window.solana || !window.solana.isPhantom) {
+            const adapter = await walletAdapterPromise;
+            if (!adapter) {
                 showMessage('createMessages', 'error', 'Phantom Wallet required');
                 return;
             }
 
             try {
-                const resp = await window.solana.connect();
-                walletAddress = resp.publicKey.toString();
-                connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                
-                updateWalletUI();
-                showMessage('createMessages', 'success', 'Wallet connected successfully');
-                
+                await adapter.connect();
+                walletAddress = adapter.publicKey.toBase58();
                 console.log('✅ Wallet connected:', walletAddress);
-                
+                showMessage('createMessages', 'success', 'Wallet connected successfully');
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
-                showMessage('createMessages', 'error', 'Connection failed');
+                if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
+                    showMessage('createMessages', 'error', 'Connexion refusée');
+                } else {
+                    showMessage('createMessages', 'error', 'Connection failed');
+                }
             }
         }
 
         async function disconnectWallet() {
             try {
-                if (window.solana && window.solana.isConnected) {
-                    await window.solana.disconnect();
+                const adapter = await walletAdapterPromise;
+                if (adapter && adapter.connected) {
+                    await adapter.disconnect();
                 }
-                
                 walletAddress = null;
                 connection = null;
                 updateWalletUI();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
-                
             } catch (error) {
                 console.error('❌ Erreur déconnexion:', error);
+                showMessage('createMessages', 'error', 'Déconnexion échouée');
             }
         }
 
@@ -3826,24 +3862,17 @@
         // === INITIALISATION ===
         window.addEventListener('load', async () => {
             console.log('🚀 Evento chargé');
-            
+
             // Charger les événements
             loadEvents();
             displayEvents();
-            
-            // Auto-connexion Phantom si déjà autorisé
-            if (window.solana && window.solana.isPhantom) {
-                try {
-                    if (window.solana.isConnected) {
-                        const resp = await window.solana.connect({ onlyIfTrusted: true });
-                        walletAddress = resp.publicKey.toString();
-                        connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                        updateWalletUI();
-                        console.log('🔄 Reconnexion automatique réussie');
-                    }
-                } catch (error) {
-                    console.log('ℹ️ Pas de reconnexion automatique');
-                }
+
+            // Récupérer l'état du wallet si déjà connecté
+            const adapter = await walletAdapterPromise;
+            if (adapter && adapter.connected) {
+                walletAddress = adapter.publicKey.toBase58();
+                connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                updateWalletUI();
             }
         });
 
@@ -3915,18 +3944,7 @@
         `;
         document.head.appendChild(asteroidStyles);
 
-        // Gestion des changements de compte wallet
-        if (window.solana) {
-            window.solana.on('accountChanged', (publicKey) => {
-                if (publicKey) {
-                    walletAddress = publicKey.toString();
-                } else {
-                    walletAddress = null;
-                }
-                updateWalletUI();
-                displayEvents(); // Rafraîchir pour les boutons supprimer
-            });
-        }
+        // Gestion des changements de compte wallet gérée par le wallet adapter (voir initialisation)
 
         // === NOUVELLE INTERFACE SIMPLE ===
         let currentEventType = 'event';
@@ -4242,11 +4260,45 @@
                     `Événement: ${event.title}\n` +
                     `Ticket: ${ticket.name}\n` +
                     `Quantité: ${window.selectedQuantity}\n` +
-                    `Total: ${formatSOL(total)} SOL\n\n` +
-                    `⚠️ Simulation Devnet`
+                    `Total: ${formatSOL(total)} SOL`
                 );
-                
+
                 if (!confirmed) return;
+
+                const btn = document.getElementById('buyTicketBtn');
+                btn.innerHTML = 'Signature...';
+                btn.disabled = true;
+
+                const adapter = await walletAdapterPromise;
+                if (!adapter || !adapter.connected) throw new Error('Wallet non connecté');
+
+                const fromPubkey = adapter.publicKey;
+                const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
+                const transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey,
+                        toPubkey,
+                        lamports: total * solanaWeb3.LAMPORTS_PER_SOL
+                    })
+                );
+                transaction.feePayer = fromPubkey;
+                transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+                const signed = await adapter.signTransaction(transaction);
+                const signature = await connection.sendRawTransaction(signed.serialize());
+                await connection.confirmTransaction(signature, 'processed');
+
+                await fetch('/purchase', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ signature })
+                });
+
+                ticket.sold = (ticket.sold || 0) + window.selectedQuantity;
+                event.raised += total;
+                saveEvents();
+                displayEvents();
+
 
                 document.getElementById('buyTicketBtn').innerHTML = 'Achat en cours...';
                 document.getElementById('buyTicketBtn').disabled = true;
@@ -4268,10 +4320,14 @@
 
             } catch (error) {
                 console.error('Erreur achat:', error);
-                showMessage('createMessages', 'error', 'Erreur lors de l\'achat: ' + error.message);
-                
-                document.getElementById('buyTicketBtn').innerHTML = 'Acheter ticket';
-                document.getElementById('buyTicketBtn').disabled = false;
+                if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
+                    showMessage('createMessages', 'error', 'Refus de signature');
+                } else {
+                    showMessage('createMessages', 'error', 'Erreur lors de l\'achat: ' + error.message);
+                }
+                const btn = document.getElementById('buyTicketBtn');
+                btn.innerHTML = 'Acheter ticket';
+                btn.disabled = false;
             }
         }
 
