@@ -3440,53 +3440,55 @@
                 return null;
             });
 
-        // Default events with Point Gamma and Challenge Centrale Lyon
+        // Default events loaded when no data available from server
         const defaultEvents = [
             {
                 id: '1',
-                title: 'Point Gamma - Innovation Summit',
-                organization: 'École Centrale Lyon',
+                title: "Hackaton de l'École 42",
+                organization: 'École 42',
                 goal: 5000,
-                raised: 3247,
-                description: "Annual innovation summit bringing together students, researchers, and industry leaders. Featuring startups pitches, tech talks, and networking sessions focused on emerging technologies.",
-                imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+                raised: 1500,
+                description: "48 heures de créativité et de programmation pour les étudiants et passionnés de code.",
+                imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
                 beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 type: 'event',
                 tickets: [
-                    { id: 1, name: 'Early Bird', price: 25, quantity: 100, available: 78 },
-                    { id: 2, name: 'Standard', price: 35, quantity: 200, available: 156 },
-                    { id: 3, name: 'VIP Access', price: 75, quantity: 50, available: 42 }
+                    { id: 1, name: 'Pass Journée', price: 15, quantity: 100, sold: 20 },
+                    { id: 2, name: 'Pass Week-end', price: 25, quantity: 80, sold: 10 }
                 ]
             },
             {
                 id: '2',
-                title: 'Challenge Centrale Lyon 2025',
-                organization: 'Student Innovation Hub',
-                goal: 8000,
-                raised: 2156,
-                description: "48-hour hackathon challenge focused on sustainable technology and AI solutions. Teams compete for prizes while developing innovative prototypes for real-world problems.",
-                imageUrl: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?auto=format&fit=crop&w=800&q=80',
+                title: 'Challenge Centrale Lyon',
+                organization: 'Centrale Lyon',
+                goal: 7000,
+                raised: 3000,
+                description: "Tournoi sportif inter-écoles avec des disciplines variées et une ambiance festive.",
+                imageUrl: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=800&q=80',
                 beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 type: 'event',
                 tickets: [
-                    { id: 1, name: 'Participant', price: 15, quantity: 150, available: 89 },
-                    { id: 2, name: 'Team Package (4 people)', price: 50, quantity: 50, available: 31 },
-                    { id: 3, name: 'Mentor Access', price: 30, quantity: 25, available: 18 }
+                    { id: 1, name: 'Pass Spectateur', price: 10, quantity: 200, sold: 50 },
+                    { id: 2, name: 'Pass Compétiteur', price: 20, quantity: 150, sold: 30 }
                 ]
             },
             {
                 id: '3',
-                title: 'Advanced AI Research Funding',
-                organization: 'European AI Consortium',
-                goal: 12000,
-                raised: 1893,
-                description: "Development of ethical AI systems and research into quantum-resistant algorithms. Supporting breakthrough research in machine learning and blockchain integration.",
-                imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80',
+                title: "Point Gamma de l'X",
+                organization: 'École Polytechnique',
+                goal: 10000,
+                raised: 4500,
+                description: "Le plus grand gala étudiant d'Europe organisé par l'École Polytechnique.",
+                imageUrl: 'https://images.unsplash.com/photo-1529638798519-566ca7c8e206?auto=format&fit=crop&w=800&q=80',
                 beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
-                type: 'crowdfunding'
+                type: 'event',
+                tickets: [
+                    { id: 1, name: 'Entrée Standard', price: 30, quantity: 300, sold: 120 },
+                    { id: 2, name: 'Entrée VIP', price: 60, quantity: 100, sold: 40 }
+                ]
             }
         ];
 
