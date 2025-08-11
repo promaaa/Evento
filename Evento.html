@@ -479,6 +479,8 @@
         }
 
         .nav-item {
+
+            position: relative;
             padding: 8px 12px;
             color: var(--cosmic-platinum);
             text-decoration: none;
@@ -491,6 +493,7 @@
         .nav-item:hover,
         .nav-item.active {
             color: var(--cosmic-gold);
+
         }
 
         .wallet-connect {
@@ -3024,6 +3027,7 @@
                         <circle cx="18" cy="6" r="4" fill="url(#cometGradient)" />
                         <path d="M3 21c5-5 9-8 15-12" stroke="url(#cometGradient)" stroke-width="4" stroke-linecap="round" />
                         <path d="M6 22c4-4 7-6 13-10" stroke="url(#cometGradient)" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+
                     </svg>
                     <span class="logo-text">Evento</span>
                 </a>
@@ -3300,34 +3304,7 @@
 
         // Wallet adapter (Phantom)
         const walletAdapterPromise = import('https://unpkg.com/@solana/wallet-adapter-phantom@0.9.25/lib/index.esm.js')
-            .then(({ PhantomWalletAdapter }) => {
-                const adapter = new PhantomWalletAdapter();
-
-                adapter.on('connect', async () => {
-                    walletAddress = adapter.publicKey.toBase58();
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                    updateWalletUI();
-                    displayEvents();
-                    try {
-                        await fetch(`${API_BASE}/auth/wallet`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ publicKey: walletAddress })
-                        });
-                    } catch (e) {
-                        console.error('Auth failed', e);
-                    }
-                });
-
-                adapter.on('disconnect', () => {
-                    walletAddress = null;
-                    connection = null;
-                    updateWalletUI();
-                    displayEvents();
-                });
-
-                return adapter;
-            })
+            .then(({ PhantomWalletAdapter }) => new PhantomWalletAdapter())
             .catch(err => {
                 console.error('Wallet adapter loading failed', err);
                 return null;
@@ -3458,8 +3435,18 @@
                 walletAddress = adapter.publicKey.toBase58();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
+                displayEvents();
                 console.log('✅ Wallet connected:', walletAddress);
                 showMessage('createMessages', 'success', 'Wallet connected successfully');
+                try {
+                    await fetch(`${API_BASE}/auth/wallet`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ publicKey: walletAddress })
+                    });
+                } catch (e) {
+                    console.error('Auth failed', e);
+                }
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
                 if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
@@ -3479,6 +3466,7 @@
                 walletAddress = null;
                 connection = null;
                 updateWalletUI();
+                displayEvents();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
             } catch (error) {
                 console.error('❌ Disconnect error:', error);
