@@ -2767,7 +2767,8 @@
         }
 
         /* === MODAL TICKETS === */
-        .ticket-modal {
+        .ticket-modal,
+        .popup-modal {
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.8);
@@ -2778,7 +2779,8 @@
             backdrop-filter: blur(4px);
         }
 
-        .ticket-modal.show {
+        .ticket-modal.show,
+        .popup-modal.show {
             display: flex;
         }
 
@@ -2918,6 +2920,10 @@
         .modal-actions {
             text-align: center;
             margin-top: 24px;
+        }
+
+        .modal-input {
+            margin: 20px 0;
         }
 
         /* === FEATURE CARD NEW DESIGN === */
@@ -3348,7 +3354,7 @@
         function showMessage(containerId, type, text, duration = 5000) {
             const container = document.getElementById(containerId);
             const icons = { success: '✅', error: '❌', warning: '⚠️' };
-            
+
             container.innerHTML = `<div class="message ${type}">${icons[type]} ${text}</div>`;
             
             if (duration > 0) {
@@ -3356,6 +3362,99 @@
                     container.innerHTML = '';
                 }, duration);
             }
+        }
+
+        async function showModal({ title, message, showCancel = false, input = false, defaultValue = '' }) {
+            return new Promise(resolve => {
+                let modal = document.getElementById('popupModal');
+                if (!modal) {
+                    modal = document.createElement('div');
+                    modal.id = 'popupModal';
+                    modal.className = 'popup-modal';
+                    modal.innerHTML = `
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="modal-title" id="popupTitle"></div>
+                                <button class="modal-close" id="popupClose">&times;</button>
+                            </div>
+                            <div class="modal-body" id="popupMessage"></div>
+                            <div class="modal-input" id="popupInputContainer" style="display:none;">
+                                <input type="text" id="popupInput" class="form-input" />
+                            </div>
+                            <div class="modal-actions" id="popupActions"></div>
+                        </div>`;
+                    document.body.appendChild(modal);
+                }
+
+                const titleEl = document.getElementById('popupTitle');
+                const messageEl = document.getElementById('popupMessage');
+                const inputContainer = document.getElementById('popupInputContainer');
+                const inputEl = document.getElementById('popupInput');
+                const actionsEl = document.getElementById('popupActions');
+                const closeBtn = document.getElementById('popupClose');
+
+                titleEl.textContent = title || '';
+                messageEl.innerHTML = message.replace(/\n/g, '<br>');
+
+                if (input) {
+                    inputContainer.style.display = 'block';
+                    inputEl.value = defaultValue;
+                } else {
+                    inputContainer.style.display = 'none';
+                    inputEl.value = '';
+                }
+
+                actionsEl.innerHTML = '';
+
+                function close(result) {
+                    modal.classList.remove('show');
+                    document.removeEventListener('keydown', keyHandler);
+                    resolve(result);
+                }
+
+                const okBtn = document.createElement('button');
+                okBtn.textContent = showCancel ? 'OK' : 'Close';
+                okBtn.className = 'btn btn-primary';
+                okBtn.onclick = () => {
+                    const result = input ? inputEl.value.trim() : true;
+                    close(result);
+                };
+                actionsEl.appendChild(okBtn);
+
+                const cancelResult = input ? null : false;
+                if (showCancel) {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.textContent = 'Cancel';
+                    cancelBtn.className = 'btn btn-secondary';
+                    cancelBtn.onclick = () => close(cancelResult);
+                    actionsEl.appendChild(cancelBtn);
+                    closeBtn.onclick = () => close(cancelResult);
+                    modal.onclick = e => { if (e.target === modal) close(cancelResult); };
+                } else {
+                    closeBtn.onclick = () => close(true);
+                    modal.onclick = e => { if (e.target === modal) close(true); };
+                }
+
+                const keyHandler = e => {
+                    if (e.key === 'Escape') close(showCancel ? cancelResult : true);
+                };
+                document.addEventListener('keydown', keyHandler);
+
+                modal.classList.add('show');
+                if (input) inputEl.focus();
+            });
+        }
+
+        function customAlert(message, title = 'Alert') {
+            return showModal({ title, message });
+        }
+
+        function customConfirm(message, title = 'Confirm') {
+            return showModal({ title, message, showCancel: true });
+        }
+
+        function customPrompt(message, title = 'Input', defaultValue = '') {
+            return showModal({ title, message, showCancel: true, input: true, defaultValue });
         }
 
         // === NAVIGATION ===
@@ -3382,7 +3481,7 @@
         // === WALLET MANAGEMENT ===
         async function toggleWallet() {
             if (walletAddress) {
-                if (confirm('Do you want to disconnect your wallet?')) {
+                if (await customConfirm('Do you want to disconnect your wallet?')) {
                     await disconnectWallet();
                 }
             } else {
@@ -3621,18 +3720,18 @@
             const event = events.find(e => e.id === eventId);
             if (!event) return;
 
-            const amountStr = prompt(`Fund "${event.title}"\nAmount in SOL (e.g., 10.5):`);
+            const amountStr = await customPrompt(`Fund "${event.title}"\nAmount in SOL (e.g., 10.5):`);
             if (!amountStr) return;
 
             const amount = parseSOL(amountStr);
             if (amount <= 0) {
-                alert('Invalid amount');
+                await customAlert('Invalid amount');
                 return;
             }
 
             try {
                 // Simulation de transaction Solana
-                const confirmed = confirm(
+                const confirmed = await customConfirm(
                     `Confirm transaction:\n\n` +
                     `Amount: ${formatSOL(amount)} SOL\n` +
                     `To: ${truncateAddress(event.beneficiaryWallet)}\n` +
@@ -3665,7 +3764,7 @@
             const event = events.find(e => e.id === eventId);
             if (!event) return;
 
-            if (!confirm(`Remove "${event.title}"?`)) return;
+            if (!await customConfirm(`Remove "${event.title}"?`)) return;
 
             try {
                 events = events.filter(e => e.id !== eventId);
@@ -4118,7 +4217,7 @@
             const total = ticket.price * window.selectedQuantity;
 
             try {
-                const confirmed = confirm(
+                const confirmed = await customConfirm(
                     `Confirm purchase:\n\n` +
                     `Event: ${event.title}\n` +
                     `Ticket: ${ticket.name}\n` +
