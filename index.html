@@ -845,6 +845,15 @@
         }
 
         /* === MESSAGES PREMIUM === */
+        #createMessages,
+        #exploreMessages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 360px;
+        }
+
         .message {
             padding: 16px 20px;
             border-radius: 8px;
@@ -873,7 +882,7 @@
         @keyframes messageSlide {
             from {
                 opacity: 0;
-                transform: translateX(-40px) scale(0.95);
+                transform: translateX(40px) scale(0.95);
             }
             to {
                 opacity: 1;
@@ -2042,7 +2051,7 @@
         @keyframes messageSlide {
             from {
                 opacity: 0;
-                transform: translateX(-40px) scale(0.95);
+                transform: translateX(40px) scale(0.95);
             }
             to {
                 opacity: 1;
@@ -3310,7 +3319,7 @@
             return `${address.slice(0, 4)}...${address.slice(-4)}`;
         }
 
-        function showMessage(containerId, type, text, duration = 5000) {
+        function showMessage(containerId, type, text, duration = 7000) {
             const container = document.getElementById(containerId);
             const icons = { success: '✅', error: '❌', warning: '⚠️' };
 
