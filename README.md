@@ -12,7 +12,7 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
 - [License](#license)
 
 ## Project Overview
-- Connect a [Phantom](https://phantom.app/) wallet on the Solana **devnet**.
+- Connect your [Phantom](https://phantom.app/) wallet on the Solana **devnet**.
 - Create events with ticket tiers and monitor funds raised.
 - Purchase tickets by signing SOL transfers; transactions are verified on-chain.
 - Start with the simple in-memory API in `server.js` or switch to the MongoDB implementation in `backend/`.
@@ -28,7 +28,7 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
    ```
    The server exposes the REST API and serves `index.html` at [http://localhost:3000](http://localhost:3000).
 3. **Use the interface**
-   - Connect a Phantom wallet configured for devnet.
+   - Connect your Phantom wallet configured for devnet.
    - Create an event or use one of the seeded examples.
    - Select a ticket and follow the prompts to sign the transaction.
 
