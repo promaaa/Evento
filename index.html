@@ -3361,8 +3361,15 @@
                 const actionsEl = document.getElementById('popupActions');
                 const closeBtn = document.getElementById('popupClose');
 
-                titleEl.textContent = title || '';
-                messageEl.innerHTML = message.replace(/\n/g, '<br>');
+
+                // Design spécial pour la pop-up de confirmation
+                if (showCancel) {
+                    titleEl.innerHTML = `<span style="color:var(--cosmic-gold);font-size:1.7em;vertical-align:middle;">⚠️</span> <span style="color:var(--cosmic-gold);font-weight:700;vertical-align:middle;">${title || 'Confirm'}</span>`;
+                    messageEl.innerHTML = `<div style="margin:18px 0 10px 0;font-size:1.13em;line-height:1.5;color:var(--cosmic-platinum);">${message.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    titleEl.textContent = title || '';
+                    messageEl.innerHTML = message.replace(/\n/g, '<br>');
+                }
 
                 if (input) {
                     inputContainer.style.display = 'block';
@@ -3372,28 +3379,32 @@
                     inputEl.value = '';
                 }
 
-                actionsEl.innerHTML = '';
 
+                actionsEl.innerHTML = '';
                 function close(result) {
                     modal.classList.remove('show');
                     document.removeEventListener('keydown', keyHandler);
                     resolve(result);
                 }
-
+                // Boutons plus visibles pour la confirmation
                 const okBtn = document.createElement('button');
-                okBtn.textContent = showCancel ? 'OK' : 'Close';
-                okBtn.className = 'btn btn-primary';
+                okBtn.textContent = showCancel ? 'Yes, confirm' : 'Close';
+                okBtn.className = showCancel ? 'btn btn-primary' : 'btn btn-primary';
+                okBtn.style.fontWeight = 'bold';
+                okBtn.style.padding = '10px 28px';
+                okBtn.style.marginRight = showCancel ? '16px' : '0';
                 okBtn.onclick = () => {
                     const result = input ? inputEl.value.trim() : true;
                     close(result);
                 };
                 actionsEl.appendChild(okBtn);
-
                 const cancelResult = input ? null : false;
                 if (showCancel) {
                     const cancelBtn = document.createElement('button');
                     cancelBtn.textContent = 'Cancel';
                     cancelBtn.className = 'btn btn-secondary';
+                    cancelBtn.style.fontWeight = 'bold';
+                    cancelBtn.style.padding = '10px 28px';
                     cancelBtn.onclick = () => close(cancelResult);
                     actionsEl.appendChild(cancelBtn);
                     closeBtn.onclick = () => close(cancelResult);
@@ -3485,7 +3496,11 @@
             if (!provider) return null;
 
             try {
-                const res = await provider.connect({ onlyIfTrusted: false });
+                // Déconnecte d'abord pour forcer l'ouverture de la fenêtre Phantom à chaque fois
+                if (provider.isConnected) {
+                    await provider.disconnect();
+                }
+                const res = await provider.connect();
                 return res;
             } catch (error) {
                 console.error('❌ Phantom unlock error:', error);
@@ -3513,7 +3528,12 @@
 
             try {
                 const response = await promptPhantomUnlock();
-                if (!response) return;
+                if (!response || !provider.isConnected) {
+                    walletAddress = null;
+                    updateWalletUI();
+                    displayEvents();
+                    return;
+                }
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
@@ -3531,6 +3551,9 @@
                     console.error('Auth failed', e);
                 }
             } catch (error) {
+                walletAddress = null;
+                updateWalletUI();
+                displayEvents();
                 console.error('❌ Wallet connection error:', error);
             }
         }
@@ -3540,13 +3563,18 @@
                 if (provider && provider.isConnected) {
                     await provider.disconnect();
                 }
-                walletAddress = null;
+                if (!provider || !provider.isConnected) {
+                    walletAddress = null;
+                }
                 connection = null;
                 updateWalletUI();
                 displayEvents();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
                 showMessage('exploreMessages', 'success', 'Wallet disconnected');
             } catch (error) {
+                walletAddress = null;
+                updateWalletUI();
+                displayEvents();
                 console.error('❌ Disconnect error:', error);
                 showMessage('createMessages', 'error', 'Disconnect failed');
                 showMessage('exploreMessages', 'error', 'Disconnect failed');
@@ -3768,7 +3796,7 @@
 
                             <div class="project-actions">
                                 ${isEvent ? `
-                                      <button class="btn btn-primary" type="button" onclick="window.location.href='tickets.html?eventId=${event.id}'">
+                                      <button class="btn btn-primary" type="button" onclick="showTickets('${event.id}')">
                                           Buy tickets
                                       </button>
                                 ` : `
@@ -4211,9 +4239,12 @@
                 showMessage('exploreMessages', 'info', 'Connect your wallet to purchase tickets');
                 return;
             }
-            const id = parseInt(eventId, 10);
-            const event = events.find(e => e.id === id);
-            if (!event || !event.tickets) return;
+            // Supporte id string ou number
+            let event = events.find(e => e.id == eventId);
+            if (!event || !event.tickets) {
+                console.warn('showTickets: event not found for id', eventId, events.map(e => e.id));
+                return;
+            }
 
             // Create the modal if it doesn't exist
             let modal = document.getElementById('ticketModal');
