@@ -1442,6 +1442,52 @@
             color: #FFD93D;
         }
 
+        /* === FEATURE CARD RESTYLE === */
+        .feature-card::before,
+        .feature-card::after {
+            content: none;
+        }
+
+        .feature-card {
+            padding: 32px 24px;
+            background: linear-gradient(135deg, #1b1f3a 0%, #272b4e 100%);
+            border-radius: 16px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            height: auto;
+            min-width: 0;
+        }
+
+        .feature-card .feature-icon {
+            width: 64px;
+            height: 64px;
+            font-size: 32px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            box-shadow: none;
+        }
+
+        .feature-card .feature-title {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .feature-card .feature-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+        }
+
         /* === CTA SECTION === */
         .cta-section {
             display: flex;
@@ -3454,8 +3500,8 @@
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 type: 'event',
                 tickets: [
-                    { id: 1, name: 'Pass Journée', price: 15, quantity: 100, sold: 20 },
-                    { id: 2, name: 'Pass Week-end', price: 25, quantity: 80, sold: 10 }
+                    { id: 1, name: 'Pass Journée', price: 0.5, quantity: 100, sold: 20 },
+                    { id: 2, name: 'Pass Week-end', price: 0.9, quantity: 80, sold: 10 }
                 ]
             },
             {
@@ -3470,8 +3516,8 @@
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 type: 'event',
                 tickets: [
-                    { id: 1, name: 'Pass Spectateur', price: 10, quantity: 200, sold: 50 },
-                    { id: 2, name: 'Pass Compétiteur', price: 20, quantity: 150, sold: 30 }
+                    { id: 1, name: 'Pass Spectateur', price: 0.3, quantity: 200, sold: 50 },
+                    { id: 2, name: 'Pass Compétiteur', price: 0.6, quantity: 150, sold: 30 }
                 ]
             },
             {
@@ -3486,8 +3532,8 @@
                 creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                 type: 'event',
                 tickets: [
-                    { id: 1, name: 'Entrée Standard', price: 30, quantity: 300, sold: 120 },
-                    { id: 2, name: 'Entrée VIP', price: 60, quantity: 100, sold: 40 }
+                    { id: 1, name: 'Entrée Standard', price: 1.2, quantity: 300, sold: 120 },
+                    { id: 2, name: 'Entrée VIP', price: 2.5, quantity: 100, sold: 40 }
                 ]
             }
         ];
@@ -3560,6 +3606,8 @@
             try {
                 await adapter.connect();
                 walletAddress = adapter.publicKey.toBase58();
+                connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                updateWalletUI();
                 console.log('✅ Wallet connected:', walletAddress);
                 showMessage('createMessages', 'success', 'Wallet connected successfully');
             } catch (error) {
@@ -4273,6 +4321,9 @@
 
                 const adapter = await walletAdapterPromise;
                 if (!adapter || !adapter.connected) throw new Error('Wallet non connecté');
+                if (!connection) {
+                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+                }
 
                 const fromPubkey = adapter.publicKey;
                 const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
