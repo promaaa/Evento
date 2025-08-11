@@ -12,25 +12,27 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
 - [License](#license)
 
 ## Project Overview
-- Connect your [Phantom](https://phantom.app/) wallet on the Solana **devnet**.
 - Create events with ticket tiers and monitor funds raised.
-- Purchase tickets by signing SOL transfers; transactions are verified on-chain.
+- Purchase tickets with a Stripe-backed checkout flow.
+- Provide a `STRIPE_SECRET_KEY` in the environment to enable payments.
 - Start with the simple in-memory API in `server.js` or switch to the MongoDB implementation in `backend/`.
 
 ## Quick Start
 1. **Install dependencies**
    ```bash
-   npm install
-   ```
-2. **Run the minimal API and web app**
-   ```bash
-   npm start
-   ```
+ npm install
+  ```
+2. **Configure Stripe**
+   - Set `STRIPE_SECRET_KEY` in your environment.
+3. **Run the minimal API and web app**
+  ```bash
+  npm start
+  ```
    The server exposes the REST API and serves `index.html` at [http://localhost:3000](http://localhost:3000).
-3. **Use the interface**
-   - Connect your Phantom wallet configured for devnet.
+4. **Use the interface**
    - Create an event or use one of the seeded examples.
-   - Select a ticket and follow the prompts to sign the transaction.
+   - Request a PaymentIntent via `POST /payments/create-intent`.
+   - Confirm the payment on the client and submit the `paymentIntentId` to `/events/:id/tickets`.
 
 ## Full API with MongoDB
 A richer API that persists events and contributions lives under [`backend/`](backend/). A separate `README` in that directory covers setup in detail, including required environment variables such as `MONGO_URI` and `SOLANA_SECRET_KEY`.

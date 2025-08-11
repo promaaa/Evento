@@ -2,6 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { Connection, clusterApiUrl } = require('@solana/web3.js');
+const Stripe = require('stripe');
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2024-06-20',
+});
 
 const app = express();
 app.use(cors());
@@ -85,18 +90,22 @@ app.post('/auth/wallet', (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/purchase', async (req, res) => {
-  const { signature } = req.body;
-  if (!signature) {
-    return res.status(400).json({ error: 'Missing signature' });
+// Create a PaymentIntent for a given amount
+app.post('/payments/create-intent', async (req, res) => {
+  const { amount, currency = 'usd' } = req.body;
+  if (!amount) {
+    return res.status(400).json({ error: 'Missing amount' });
   }
   try {
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-    const status = await connection.getSignatureStatus(signature);
-    res.json({ success: true, status: status.value });
+    const intent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      automatic_payment_methods: { enabled: true },
+    });
+    res.json({ clientSecret: intent.client_secret, paymentIntentId: intent.id });
   } catch (err) {
-    console.error('Verification failed', err);
-    res.status(500).json({ error: 'Verification failed' });
+    console.error('Payment intent creation failed', err);
+    res.status(500).json({ error: 'Payment intent creation failed' });
   }
 });
 
@@ -144,9 +153,9 @@ app.post('/events', (req, res) => {
 });
 
 // Update ticket sales for an event
-app.post('/events/:id/tickets', (req, res) => {
+app.post('/events/:id/tickets', async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const { ticketIndex, quantity = 1, buyer } = req.body;
+  const { ticketIndex, quantity = 1, buyer, paymentIntentId } = req.body;
   const event = events.find(e => e.id === id);
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
@@ -154,6 +163,15 @@ app.post('/events/:id/tickets', (req, res) => {
   if (!ticket) return res.status(400).json({ error: 'Ticket not found' });
   if (ticket.sold + quantity > ticket.quantity) {
     return res.status(400).json({ error: 'Not enough tickets available' });
+  }
+
+  try {
+    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    if (intent.status !== 'succeeded') {
+      return res.status(400).json({ error: 'Payment not completed' });
+    }
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid payment intent' });
   }
 
   ticket.sold += quantity;
