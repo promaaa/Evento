@@ -916,51 +916,51 @@
             background: #3b82f6;
         }
 
-        /* === PROJETS PREMIUM === */
+        /* === CARTES EXPLORE PREMIUM === */
         .project-card {
             position: relative;
-            height: 380px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
             display: flex;
-            align-items: flex-end;
-            background: var(--cosmic-charcoal);
-            border: 1px solid rgba(255,255,255,0.06);
-            cursor: pointer;
-            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: var(--radius-2xl);
+            background: var(--gradient-card);
+            backdrop-filter: blur(var(--blur-lg));
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: var(--shadow-premium);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
         }
 
         .project-card::before {
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.35);
-            transition: background .3s ease;
-            z-index: 1;
-        }
-
-        .project-card:hover::before {
-            background: rgba(0,0,0,0.55);
-
+            padding: 1px;
+            border-radius: inherit;
+            background: var(--gradient-cosmic);
+            -webkit-mask:
+                linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            pointer-events: none;
+            z-index: 2;
         }
 
         .project-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.6);
-            border-color: var(--cosmic-gold);
-
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-premium), 0 0 30px rgba(255, 215, 0, 0.25);
         }
 
         .project-image {
-            position: absolute;
-            inset: 0;
-            background: var(--gray-800);
+            position: relative;
+            height: 200px;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            background: var(--gray-800);
             color: var(--muted-foreground);
-            overflow: hidden;
+            font-size: 24px;
             z-index: 0;
         }
 
@@ -968,63 +968,58 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform var(--transition-normal), filter var(--transition-normal);
+            transition: transform var(--transition-normal);
         }
 
         .project-card:hover .project-image img {
-            transform: scale(1.05);
-            filter: brightness(1.1);
+            transform: scale(1.08);
         }
 
         .project-info {
-            position: relative;
-            z-index: 2;
-            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
             padding: var(--spacing-6);
-            background: rgba(0,0,0,0.6);
-
+            background: rgba(0,0,0,0.55);
+            z-index: 3;
         }
 
         .project-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            margin: 0 0 var(--spacing-2);
             color: var(--foreground);
         }
 
         .project-org {
             font-size: 14px;
             color: var(--muted-foreground);
-            margin-bottom: var(--spacing-4);
         }
 
         .progress-track {
-            height: 4px;
+            width: 100%;
+            height: 8px;
             background: rgba(255,255,255,0.1);
-            border-radius: 2px;
+            border-radius: var(--radius-full);
             overflow: hidden;
-            margin-bottom: var(--spacing-3);
         }
 
         .progress-fill {
             height: 100%;
             background: var(--gradient-cosmic);
-            width: 0;
         }
 
         .project-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--muted-foreground);
-            margin-bottom: var(--spacing-4);
         }
 
         .project-description {
             color: var(--muted-foreground);
             font-size: 14px;
             line-height: 1.6;
-            margin-bottom: var(--spacing-4);
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -2454,17 +2449,19 @@
         /* === CARDS D'ÉVÉNEMENTS AMÉLIORÉES === */
         .event-type-badge {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--gradient-cosmic);
-            color: var(--cosmic-black);
+            top: var(--spacing-4);
+            left: var(--spacing-4);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(var(--blur-sm));
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--cosmic-gold);
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            z-index: 2;
+            z-index: 3;
         }
 
         .event-location {
