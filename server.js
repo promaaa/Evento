@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const { Connection, clusterApiUrl } = require('@solana/web3.js');
 
+
 // Reusable Solana connection
 const connection = new Connection(
   process.env.SOLANA_RPC_URL || clusterApiUrl('devnet'),
@@ -36,3 +37,5 @@ app.get('/', (_req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+
+export default app;
