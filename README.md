@@ -103,11 +103,15 @@ A richer API that persists events and contributions lives under [`backend/`](bac
 ## GitHub Pages
 .github/workflows/pages.yml builds the static site. Publish by:
 
+
 - Enable GitHub Pages in repository settings and choose **GitHub Actions** as the source.
 - Add `config.js` at the project root with `window.API_BASE = "https://your-backend.example";` and reference it in `index.html`.
 - Push to `main` to trigger the workflow and deploy.
 
 The generated site serves the dApp at the root and documentation under `/docs`.
+
+4. **Générer le site statique localement**
+   - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, `config.js` et la documentation.
 
 ## License
 Distributed under the ISC License. See [LICENSE](LICENSE) for details.
