@@ -919,20 +919,41 @@
         /* === PROJETS PREMIUM === */
         .project-card {
             position: relative;
-            height: 360px;
-            border: 1px solid var(--border);
+            height: 380px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             display: flex;
             align-items: flex-end;
-            background: var(--gray-900);
+            background: linear-gradient(135deg, rgba(30,30,40,0.9) 0%, rgba(10,10,15,0.9) 100%);
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(6px);
             cursor: pointer;
-            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
         }
 
         .project-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.6), 0 4px 8px rgba(255,215,0,0.15);
+            border-color: rgba(255,215,0,0.3);
+        }
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: var(--gradient-cosmic);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: .4;
+            transition: opacity .3s ease;
+            pointer-events: none;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
         }
 
         .project-image {
@@ -964,8 +985,8 @@
             z-index: 1;
             width: 100%;
             padding: var(--spacing-6);
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
+            backdrop-filter: blur(4px);
         }
 
         .project-title {
@@ -2930,32 +2951,47 @@
         }
 
         /* === FEATURE CARD NEW DESIGN === */
-        .feature-card::before,
-        .feature-card::after {
-            content: none;
-        }
-
         .feature-card {
-            background: var(--gradient-card);
+            position: relative;
+            background: rgba(255,255,255,0.02);
             text-align: center;
             padding: var(--space-xl);
             border-radius: var(--radius-2xl);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: var(--shadow-md);
-            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-            cursor: default;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            transition: transform .3s ease, box-shadow .3s ease;
             height: auto;
             min-width: 0;
         }
 
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: var(--gradient-accent);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: .4;
+            pointer-events: none;
+            transition: opacity .3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
         .feature-card:hover {
             transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
         }
 
         .feature-card .feature-icon {
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
             margin: 0 auto var(--space-md);
             border-radius: 50%;
             background: var(--gradient-accent);
@@ -2963,17 +2999,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .feature-card .feature-title {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             margin-bottom: var(--space-xs);
+            font-weight: 600;
         }
 
         .feature-card .feature-description {
             font-size: 0.95rem;
             color: var(--muted-foreground);
+            line-height: 1.6;
         }
     </style>
 </head>
