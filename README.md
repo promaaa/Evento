@@ -1,6 +1,6 @@
 # Evento
 
-Evento is an experimental ticketing and crowdfunding dApp for the **Solana** blockchain. The project ships as a static site that can optionally communicate with a minimal Node API or a full MongoDB-backed service.
+Evento is a ticketing and crowdfunding dApp for the **Solana** blockchain that runs entirely as a static site. It is optimized for deployment on platforms like GitHub Pages. To connect to a custom backend, provide a small `config.js` that sets `window.API_BASE`.
 
 ## Features
 
@@ -13,19 +13,6 @@ Evento is an experimental ticketing and crowdfunding dApp for the **Solana** blo
 
 - Node.js 18+
 - Phantom wallet with Devnet SOL (use a faucet).
-
-## Local Development
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Start the Node server and static site:
-   ```bash
-   npm start
-   ```
-   The app is served at [http://localhost:3000](http://localhost:3000).
-3. Connect Phantom, create events, and buy tickets. Transactions are verified server-side through `/events/:id/tickets`.
 
 ## Deployment to GitHub Pages
 
@@ -57,10 +44,6 @@ Change this value in `index.html` to point to a custom RPC or mainnet.
 - Static mode: edit the `defaultEvents` array in `index.html`.
 - Node server: edit the `events` array in `server.js`.
 
-## Full API with MongoDB
-
-A richer, persistent API lives in [`backend/`](backend/). See [`backend/README.md`](backend/README.md) for setup, including required environment variables such as `MONGO_URI` and `SOLANA_SECRET_KEY`.
-
 ## Project Structure
 
 ```
@@ -68,13 +51,14 @@ A richer, persistent API lives in [`backend/`](backend/). See [`backend/README.m
 ├── index.html          # Web interface
 ├── server.js          # Minimal API (Express + in-memory storage)
 ├── package.json
-├── backend/           # Full API with MongoDB
+├── backend/           # Optional backend service
 └── docs/              # Additional documentation
 ```
 
 ## Additional Documentation
 
 - [Architecture overview](docs/architecture.md)
+- [Backend guide](docs/backend.md)
 
 ## License
 
