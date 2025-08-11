@@ -4210,6 +4210,7 @@
         function showTickets(eventId) {
             if (!walletAddress) {
                 showMessage('exploreMessages', 'info', 'Connect your wallet to purchase tickets');
+                return;
             }
             const id = parseInt(eventId, 10);
             const event = events.find(e => e.id === id);
