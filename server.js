@@ -1,7 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { Connection, clusterApiUrl, LAMPORTS_PER_SOL } = require('@solana/web3.js');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { Connection, clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Reusable Solana connection
 const connection = new Connection(
@@ -228,3 +232,5 @@ app.get('/', (_req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+
+export default app;
