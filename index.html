@@ -4317,6 +4317,7 @@
 
                 const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
                 showMessage('exploreMessages', 'success', `✅ Purchased ${window.selectedQuantity} ${ticket.name} ticket(s) for "${event.title}" — <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">View on Solana Explorer</a>`);
+                showPurchaseReceipt(signature, event, ticket, window.selectedQuantity);
                 closeTicketModal();
                 loadEvents();
 
@@ -4331,6 +4332,57 @@
                 btn.innerHTML = 'Buy ticket';
                 btn.disabled = false;
             }
+        }
+
+        function showPurchaseReceipt(signature, event, ticket, quantity) {
+            let modal = document.getElementById('receiptModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'receiptModal';
+                modal.className = 'popup-modal';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">Purchase receipt</div>
+                            <button class="modal-close" id="receiptClose">&times;</button>
+                        </div>
+                        <div class="modal-body" id="receiptBody"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.getElementById('receiptClose').onclick = () => modal.classList.remove('show');
+                modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+            }
+
+            const total = ticket.price * quantity;
+            const explorerUrl = `https://explorer.solana.com/tx/${signature}?cluster=devnet`;
+            document.getElementById('receiptBody').innerHTML = `
+                <p><strong>Event:</strong> ${event.title}</p>
+                <p><strong>Ticket:</strong> ${ticket.name}</p>
+                <p><strong>Quantity:</strong> ${quantity}</p>
+                <p><strong>Total:</strong> ${formatSOL(total)} SOL</p>
+                <p><a href="${explorerUrl}" target="_blank" rel="noopener noreferrer">View on Solana Explorer</a></p>
+                <button class="btn btn-secondary" id="copyTxIdBtn">Copy ID</button>
+            `;
+
+            document.getElementById('copyTxIdBtn').onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(signature);
+                    showMessage('exploreMessages', 'info', 'Transaction ID copied');
+                } catch (err) {}
+            };
+
+            modal.classList.add('show');
+
+            const receipts = JSON.parse(localStorage.getItem('purchaseReceipts') || '[]');
+            receipts.push({
+                signature,
+                eventTitle: event.title,
+                ticketName: ticket.name,
+                quantity,
+                total
+            });
+            localStorage.setItem('purchaseReceipts', JSON.stringify(receipts));
         }
 
         function closeTicketModal() {
