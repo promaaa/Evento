@@ -3151,7 +3151,14 @@
                                     <input type="text" id="eventOrg" placeholder="Solana Foundation" required>
                                 </div>
                             </div>
-                            
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Solana Address *</label>
+                                    <input type="text" id="userWallet" placeholder="Your wallet address" required>
+                                </div>
+                            </div>
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Event Date</label>
@@ -3471,13 +3478,16 @@
         function updateWalletUI() {
             const btn = document.getElementById('walletBtn');
             const text = document.getElementById('walletText');
-            
+            const walletInput = document.getElementById('userWallet');
+
             if (walletAddress) {
                 btn.classList.add('connected');
                 text.textContent = truncateAddress(walletAddress);
+                if (walletInput) walletInput.value = walletAddress;
             } else {
                 btn.classList.remove('connected');
                 text.textContent = 'Connect Wallet';
+                if (walletInput) walletInput.value = '';
             }
         }
 
@@ -3611,6 +3621,8 @@
                 return;
             }
 
+            const userWallet = eventData.wallet || walletAddress;
+
             try {
                 const newEvent = {
                     title: eventData.title.trim(),
@@ -3618,8 +3630,8 @@
                     goal: parseSOL(eventData.goal),
                     description: eventData.description.trim(),
                     imageUrl: eventData.imageUrl?.trim() || '',
-                    beneficiaryWallet: walletAddress,
-                    creatorWallet: walletAddress,
+                    beneficiaryWallet: userWallet,
+                    creatorWallet: userWallet,
                     tickets: eventData.tickets || [],
                     date: eventData.date
                 };
@@ -3735,7 +3747,8 @@
                 organization: document.getElementById('eventOrg').value,
                 goal: document.getElementById('eventGoal').value,
                 description: document.getElementById('eventDescription').value,
-                imageUrl: document.getElementById('eventImage').value
+                imageUrl: document.getElementById('eventImage').value,
+                wallet: document.getElementById('userWallet').value || walletAddress
             };
             
             createEvent(eventData);
@@ -3952,6 +3965,7 @@
             }
 
             // Collecte des données selon le type
+            const userWallet = document.getElementById('userWallet').value || walletAddress;
             let eventData = {
                 id: Date.now().toString(),
                 title,
@@ -3961,8 +3975,8 @@
                 date: document.getElementById('eventDate').value,
                 location: document.getElementById('eventLocation').value,
                 type: currentEventType,
-                beneficiaryWallet: walletAddress,
-                creatorWallet: walletAddress,
+                beneficiaryWallet: userWallet,
+                creatorWallet: userWallet,
                 raised: 0
             };
 
