@@ -2905,7 +2905,7 @@
                 
                 <button class="wallet-connect" id="walletBtn" onclick="toggleWallet()">
                     <div class="status-dot" id="walletStatus"></div>
-                    <span id="walletText">Connect Wallet</span>
+                    <span id="walletText">Connect Phantom Wallet</span>
                 </button>
             </div>
         </div>
@@ -3394,7 +3394,7 @@
         async function connectWallet() {
             provider = getProvider();
             if (!provider) {
-                showMessage('createMessages', 'error', 'Phantom Wallet required');
+                showMessage('createMessages', 'error', 'Please connect your Phantom wallet');
                 return;
             }
 
@@ -3443,7 +3443,7 @@
 
         async function payWithPhantom(toAddress, lamports) {
             provider = provider || getProvider();
-            if (!provider || !provider.isPhantom) throw new Error('Phantom Wallet required');
+            if (!provider || !provider.isPhantom) throw new Error('Please connect your Phantom wallet');
 
             // Always prompt the Phantom extension so the user can confirm the wallet
             const response = await provider.connect({ onlyIfTrusted: false });
@@ -3480,7 +3480,7 @@
                 if (walletInput) walletInput.value = walletAddress;
             } else {
                 btn.classList.remove('connected');
-                text.textContent = 'Connect Wallet';
+                text.textContent = 'Connect Phantom Wallet';
                 if (walletInput) walletInput.value = '';
             }
         }
@@ -3621,7 +3621,7 @@
         // === EVENT CREATION ===
         async function createEvent(eventData) {
             if (!walletAddress) {
-                showMessage('createMessages', 'error', 'Connect wallet first');
+                showMessage('createMessages', 'error', 'Connect your wallet first');
                 return;
             }
 
@@ -3669,7 +3669,7 @@
         // === FUNDING ===
         async function fundEvent(eventId) {
             if (!walletAddress) {
-                showMessage('createMessages', 'error', 'Connect wallet first');
+                showMessage('createMessages', 'error', 'Connect your wallet first');
                 return;
             }
 
