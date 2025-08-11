@@ -12,31 +12,31 @@ const sessions = new Map();
 const events = [
   {
     id: 1,
-    title: "Hackaton de l'École 42",
-    organization: 'École 42',
+    title: '42 School Hackathon',
+    organization: '42 School',
     goal: 5000,
     raised: 1500,
     description:
-      "48 heures de créativité et de programmation pour les étudiants et passionnés de code.",
+      '48 hours of creativity and coding for students and enthusiasts.',
     imageUrl:
       'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
     beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Pass Journée', price: 0.5, quantity: 100, sold: 20 },
-      { id: 2, name: 'Pass Week-end', price: 0.9, quantity: 80, sold: 10 }
+      { id: 1, name: 'Day Pass', price: 0.5, quantity: 100, sold: 20 },
+      { id: 2, name: 'Weekend Pass', price: 0.9, quantity: 80, sold: 10 }
     ],
     contributions: []
   },
   {
     id: 2,
-    title: 'Challenge Centrale Lyon',
+    title: 'Centrale Lyon Challenge',
     organization: 'Centrale Lyon',
     goal: 7000,
     raised: 3000,
     description:
-      "Tournoi sportif inter-écoles avec des disciplines variées et une ambiance festive.",
+      'Inter-school sports tournament with various disciplines and a festive atmosphere.',
     imageUrl:
       'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80',
 
@@ -44,19 +44,19 @@ const events = [
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Pass Spectateur', price: 0.3, quantity: 200, sold: 50 },
-      { id: 2, name: 'Pass Compétiteur', price: 0.6, quantity: 150, sold: 30 }
+      { id: 1, name: 'Spectator Pass', price: 0.3, quantity: 200, sold: 50 },
+      { id: 2, name: 'Competitor Pass', price: 0.6, quantity: 150, sold: 30 }
     ],
     contributions: []
   },
   {
     id: 3,
-    title: "Point Gamma de l'X",
-    organization: 'École Polytechnique',
+    title: 'Polytechnique Point Gamma',
+    organization: 'Ecole Polytechnique',
     goal: 10000,
     raised: 4500,
     description:
-      "Le plus grand gala étudiant d'Europe organisé par l'École Polytechnique.",
+      'The largest student gala in Europe organized by Ecole Polytechnique.',
     imageUrl:
       'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
 
@@ -64,8 +64,8 @@ const events = [
     creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
     type: 'event',
     tickets: [
-      { id: 1, name: 'Entrée Standard', price: 1.2, quantity: 300, sold: 120 },
-      { id: 2, name: 'Entrée VIP', price: 2.5, quantity: 100, sold: 40 }
+      { id: 1, name: 'Standard Entry', price: 1.2, quantity: 300, sold: 120 },
+      { id: 2, name: 'VIP Entry', price: 2.5, quantity: 100, sold: 40 }
     ],
     contributions: []
   }
