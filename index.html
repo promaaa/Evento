@@ -3440,10 +3440,12 @@
         // === WALLET MANAGEMENT ===
         async function toggleWallet() {
             provider = getProvider();
+            ensurePhantomBanner();
             if (!walletAddress) {
                 if (!provider) {
-                    window.open('https://phantom.app/', '_blank', 'noopener');
-                    ensurePhantomBanner();
+                    const installMsg = "Phantom Wallet n'est pas installé. Cliquez sur le bouton pour installer.";
+                    showMessage('createMessages', 'error', installMsg, 8000);
+                    showMessage('exploreMessages', 'error', installMsg, 8000);
                     return;
                 }
                 await connectWallet();
@@ -3491,13 +3493,12 @@
         async function connectWallet() {
             provider = getProvider();
             if (!provider) {
-                window.open('https://phantom.app/', '_blank', 'noopener');
                 const installLink = '<a href="https://phantom.app/" target="_blank" rel="noopener noreferrer">Installer Phantom</a>';
                 const phantomLogo = '<span style="display:inline-flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3c4.97 0 9 3.582 9 8v3.5c0 3.59-2.91 6.5-6.5 6.5H9.5C5.91 21 3 18.09 3 14.5V11c0-4.418 4.03-8 9-8z" fill="#8a2be2" opacity="0.3"/><path d="M9 10.5c0-.828.672-1.5 1.5-1.5S12 9.672 12 10.5 11.328 12 10.5 12 9 11.328 9 10.5zm4.5 0c0-.828.672-1.5 1.5-1.5S16.5 9.672 16.5 10.5 15.828 12 15 12s-1.5-.672-1.5-1.5zM8.5 14.5c.7 1.2 2.07 2 3.5 2s2.8-.8 3.5-2" stroke="#8a2be2" stroke-width="1.5" stroke-linecap="round"/></svg>Phantom</span>';
                 const text = `Aucun wallet détecté. Cette application nécessite ${phantomLogo}. ${installLink} pour continuer.`;
                 showMessage('createMessages', 'error', text, 12000);
                 showMessage('exploreMessages', 'error', text, 12000);
-                ensurePhantomBanner(true);
+                ensurePhantomBanner();
                 return;
             }
 
@@ -3580,6 +3581,7 @@
             const text = document.getElementById('walletText');
             const walletInput = document.getElementById('userWallet');
             const phantomAvailable = !!getProvider();
+            btn.onclick = toggleWallet;
             if (walletAddress) {
                 btn.classList.add('connected');
                 text.textContent = truncateAddress(walletAddress);
@@ -3595,19 +3597,8 @@
             } else {
                 btn.classList.remove('connected');
                 text.textContent = phantomAvailable ? 'Connect Phantom Wallet' : 'Installer Phantom Wallet';
-                if (!phantomAvailable) {
-                    btn.onclick = function() {
-                        window.open('https://phantom.app/', '_blank', 'noopener');
-                        const installMsg = 'Phantom Wallet n\'est pas installé. Cliquez sur le bouton pour installer.';
-                        showMessage('createMessages', 'error', installMsg, 8000);
-                        showMessage('exploreMessages', 'error', installMsg, 8000);
-                    };
-                } else {
-                    btn.onclick = originalWalletBtnHandler;
-                }
                 if (walletInput) walletInput.value = '';
             }
-            ensurePhantomBanner(true);
         }
 
         function ensurePhantomBanner() {
@@ -3906,7 +3897,6 @@
                 });
             }
 
-            ensurePhantomBanner();
         });
 
         // === PREMIUM ASTEROID SYSTEM ===
