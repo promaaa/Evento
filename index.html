@@ -4226,16 +4226,16 @@
                 });
                 if (!res.ok) throw new Error('Server error');
 
-                showMessage('createMessages', 'success', `✅ ${window.selectedQuantity} ticket(s) purchased successfully!`);
+                showMessage('exploreMessages', 'success', `✅ Purchased ${window.selectedQuantity} ${ticket.name} ticket(s) for "${event.title}"`);
                 closeTicketModal();
                 loadEvents();
 
             } catch (error) {
                 console.error('Purchase error:', error);
                 if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
-                    showMessage('createMessages', 'error', 'Signature declined');
+                    showMessage('exploreMessages', 'error', 'Signature declined');
                 } else {
-                    showMessage('createMessages', 'error', 'Error during purchase: ' + error.message);
+                    showMessage('exploreMessages', 'error', 'Error during purchase: ' + error.message);
                 }
                 const btn = document.getElementById('buyTicketBtn');
                 btn.innerHTML = 'Buy ticket';
