@@ -32,7 +32,7 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
    ```bash
    npm start
    ```
-   This serves both the API and the `Evento.html` interface at `http://localhost:3000`.
+   This serves both the API and the `index.html` interface at `http://localhost:3000`.
 
 4. **Test ticket purchases**
    - Connect your Phantom wallet to the `devnet`.
@@ -65,13 +65,13 @@ An advanced version of the API is available in the `backend/` folder.
    The API also listens on `http://localhost:3000`.
 
 4. **Consume the API**
-   The `Evento.html` interface can be used as-is. Exposed routes include `GET /events`, `POST /events`, `POST /events/:id/tickets`…
+   The `index.html` interface can be used as-is. Exposed routes include `GET /events`, `POST /events`, `POST /events/:id/tickets`…
 
 ## Project Structure
 
 ```
 .
-├── Evento.html          # Web interface
+├── index.html          # Web interface
 ├── server.js            # Minimal API (Express + in-memory storage)
 ├── package.json
 └── backend/             # Full API with MongoDB
@@ -79,6 +79,12 @@ An advanced version of the API is available in the `backend/` folder.
     ├── routes/          # Express routes
     └── server.js        # Entry point for the full API
 ```
+
+## Deploying to GitHub Pages
+
+1. Ensure `index.html` is committed in the repository root or a `docs/` folder.
+2. Push the repository to GitHub and enable **GitHub Pages** in the repository settings.
+3. The page assumes the API is served from the same origin. If your API is hosted elsewhere, set `window.API_BASE` before loading the script.
 
 ## Development
 
