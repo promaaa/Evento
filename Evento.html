@@ -3063,6 +3063,7 @@
         // === ÉTAT GLOBAL ===
         let walletAddress = null;
         let connection = null;
+        let provider = null;
         let events = [];
 
         // Default events loaded when no data available from server
@@ -3271,14 +3272,23 @@
             }
         }
 
+        function getProvider() {
+            if ('solana' in window) {
+                const provider = window.solana;
+                if (provider.isPhantom) return provider;
+            }
+            return null;
+        }
+
         async function connectWallet() {
-            if (!window.solana || !window.solana.isPhantom) {
+            provider = getProvider();
+            if (!provider) {
                 showMessage('createMessages', 'error', 'Phantom Wallet required');
                 return;
             }
 
             try {
-                const response = await window.solana.connect();
+                const response = await provider.connect();
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
@@ -3306,8 +3316,8 @@
 
         async function disconnectWallet() {
             try {
-                if (window.solana && window.solana.isConnected) {
-                    await window.solana.disconnect();
+                if (provider && provider.isConnected) {
+                    await provider.disconnect();
                 }
                 walletAddress = null;
                 connection = null;
@@ -3318,6 +3328,27 @@
                 console.error('❌ Disconnect error:', error);
                 showMessage('createMessages', 'error', 'Disconnect failed');
             }
+        }
+
+        async function payWithPhantom(toAddress, lamports) {
+            provider = provider || getProvider();
+            if (!provider) throw new Error('Wallet not connected');
+            connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
+
+            const transaction = new solanaWeb3.Transaction().add(
+                solanaWeb3.SystemProgram.transfer({
+                    fromPubkey: provider.publicKey,
+                    toPubkey: new solanaWeb3.PublicKey(toAddress),
+                    lamports
+                })
+            );
+            transaction.feePayer = provider.publicKey;
+            const { blockhash } = await connection.getRecentBlockhash();
+            transaction.recentBlockhash = blockhash;
+            const signed = await provider.signTransaction(transaction);
+            const signature = await connection.sendRawTransaction(signed.serialize());
+            await connection.confirmTransaction(signature, 'confirmed');
+            return signature;
         }
 
         function updateWalletUI() {
@@ -3598,9 +3629,10 @@
             displayEvents();
 
             // Récupérer l'état du wallet si déjà connecté
-            if (window.solana && window.solana.isPhantom) {
+            provider = getProvider();
+            if (provider) {
                 try {
-                    const resp = await window.solana.connect({ onlyIfTrusted: true });
+                    const resp = await provider.connect({ onlyIfTrusted: true });
                     walletAddress = resp.publicKey.toString();
                     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                     updateWalletUI();
@@ -3608,7 +3640,7 @@
                     // Wallet not yet connected
                 }
 
-                window.solana.on('accountChanged', (publicKey) => {
+                provider.on('accountChanged', (publicKey) => {
                     if (publicKey) {
                         walletAddress = publicKey.toString();
                     } else {
@@ -3688,7 +3720,7 @@
         `;
         document.head.appendChild(asteroidStyles);
 
-        // Gestion des changements de compte wallet effectuée via window.solana (voir initialisation)
+        // Gestion des changements de compte wallet effectuée via le fournisseur Phantom (voir initialisation)
 
         // === NOUVELLE INTERFACE SIMPLE ===
         let currentEventType = 'event';
@@ -4020,30 +4052,12 @@
                 btn.innerHTML = 'Signing...';
                 btn.disabled = true;
 
-                if (!window.solana || !window.solana.isPhantom) throw new Error('Wallet not connected');
-                if (!connection) {
-                    connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-                }
+                provider = provider || getProvider();
+                if (!provider) throw new Error('Wallet not connected');
+                connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
-                const fromPubkey = new solanaWeb3.PublicKey(walletAddress);
-                const toPubkey = new solanaWeb3.PublicKey(event.beneficiaryWallet);
                 const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
-                const transaction = new solanaWeb3.Transaction().add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey,
-                        toPubkey,
-                        lamports
-                    })
-                );
-                transaction.feePayer = fromPubkey;
-                const latestBlockhash = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = latestBlockhash.blockhash;
-
-                const { signature } = await window.solana.signAndSendTransaction(transaction);
-                await connection.confirmTransaction(
-                    { signature, ...latestBlockhash },
-                    'confirmed'
-                );
+                const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
 
                 await fetch(`${API_BASE}/purchase`, {
                     method: 'POST',
