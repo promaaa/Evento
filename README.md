@@ -16,19 +16,6 @@ Quick Start (Local)
    - npm start
 3) Open http://localhost:3000
 
-Deploy to GitHub Pages (Static)
-There are two options:
-
-Option A – Serve raw static files (recommended)
-1) Push the repository to GitHub and enable GitHub Pages in repo Settings → Pages.
-2) Set Source to “Deploy from a branch” and select the `main` branch and `/ (root)` path.
-3) Ensure `index.html` is at repo root. Pages will serve it at https://<your-user>.github.io/<repo>/
-
-Option B – Use `gh-pages` branch
-1) Create a new branch `gh-pages` containing the same `index.html`, `README.md`, and assets.
-2) In Settings → Pages, set Source to `gh-pages` branch.
-3) Push updates to `gh-pages` to deploy.
-
 Static Mode Notes
 - Backend API calls are attempted first; if unavailable, the app falls back to default events in the browser and localStorage for persistence.
 - Ticket purchases in static mode rely on Phantom to send transfers on Devnet, then verify client-side via the Solana RPC.
@@ -114,35 +101,14 @@ A richer API that persists events and contributions lives under [`backend/`](bac
 - [Architecture overview](docs/architecture.md)
 
 ## GitHub Pages
-The repository includes a workflow at `.github/workflows/pages.yml` that builds a static site containing `index.html` and the
-contents of `docs/`. To publish:
+.github/workflows/pages.yml builds the static site. Publish by:
 
-1. Enable GitHub Pages in the repository settings and choose **GitHub Actions** as the source.
-2. Push to `main` and the site will automatically deploy to the configured Pages URL.
-3. To preview what the workflow produces, run:
-   ```bash
-   npm run build:pages
-   ```
-   This script creates a `dist/` folder with `index.html`, `config.js`, backend documentation, and the Markdown files under `docs/`.
 
-The generated site serves the dApp on the root path and documentation under `/docs`.
+- Enable GitHub Pages in repository settings and choose **GitHub Actions** as the source.
+- Add `config.js` at the project root with `window.API_BASE = "https://your-backend.example";` and reference it in `index.html`.
+- Push to `main` to trigger the workflow and deploy.
 
-## Déploiement GitHub Pages
-
-1. **Activer GitHub Pages**
-   - Dans les paramètres du dépôt, section *Pages*, sélectionner **GitHub Actions** comme source.
-   - Chaque push sur `main` déclenche le workflow `.github/workflows/pages.yml` qui construit et publie le site statique.
-
-2. **Configurer l'URL de l'API**
-   - Créer un fichier `config.js` à la racine du projet contenant :
-     ```js
-     window.API_BASE = "https://votre-backend.example";
-     ```
-   - Référencer ce fichier dans `index.html` (par exemple avec `<script src="config.js"></script>`) avant le script principal afin que `API_BASE` soit disponible.
-
-3. **Héberger le backend**
-   - Déployer l'API (`server.js` ou `backend/`) sur un service compatible tel que Render ou Railway.
-   - Récupérer l'URL publique du service et la reporter dans `config.js` pour exposer le backend au frontend.
+The generated site serves the dApp at the root and documentation under `/docs`.
 
 4. **Générer le site statique localement**
    - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, `config.js` et la documentation.
