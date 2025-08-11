@@ -2779,8 +2779,15 @@
             width: 80px;
             height: 80px;
             margin: -40px 0 0 -40px;
-            border: 1px dashed rgba(255,255,255,0.2);
+            border: 1px dashed rgba(255,215,0,0.25);
             border-radius: 50%;
+            opacity: 0;
+            transition: opacity .3s ease;
+        }
+
+        .feature-card:hover .feature-icon::before {
+            opacity: 1;
+
         }
 
         .feature-card .feature-icon::after {
@@ -2793,10 +2800,17 @@
             margin: -4px 0 0 -4px;
             border-radius: 50%;
             background: var(--cosmic-gold);
+            box-shadow: 0 0 6px rgba(255,215,0,0.6);
             animation: orbit 6s linear infinite;
+            animation-play-state: paused;
+            opacity: 0;
+            transition: opacity .3s ease;
         }
 
         .feature-card:hover .feature-icon::after {
+            opacity: 1;
+            animation-play-state: running;
+
             background: var(--cosmic-platinum);
         }
 
