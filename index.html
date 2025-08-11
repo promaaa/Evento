@@ -4069,9 +4069,7 @@
         // === TICKET MANAGEMENT ===
         function showTickets(eventId) {
             if (!walletAddress) {
-                showMessage('exploreMessages', 'error', 'Please connect your wallet');
-
-                return;
+                showMessage('exploreMessages', 'info', 'Connect your wallet to purchase tickets');
             }
             const id = parseInt(eventId, 10);
             const event = events.find(e => e.id === id);
@@ -4177,7 +4175,8 @@
         async function buyTicket() {
             if (!walletAddress) {
                 showMessage('exploreMessages', 'error', 'Please connect your wallet first');
-                return;
+                await connectWallet();
+                if (!walletAddress) return;
             }
             if (window.selectedTicketIndex === null) return;
 
