@@ -122,5 +122,22 @@ contents of `docs/`. To publish:
 
 The generated site serves the dApp on the root path and documentation under `/docs`.
 
+## Déploiement GitHub Pages
+
+1. **Activer GitHub Pages**
+   - Dans les paramètres du dépôt, section *Pages*, sélectionner **GitHub Actions** comme source.
+   - Chaque push sur `main` déclenche le workflow `.github/workflows/pages.yml` qui construit et publie le site statique.
+
+2. **Configurer l'URL de l'API**
+   - Créer un fichier `config.js` à la racine du projet contenant :
+     ```js
+     window.API_BASE = "https://votre-backend.example";
+     ```
+   - Référencer ce fichier dans `index.html` (par exemple avec `<script src="config.js"></script>`) avant le script principal afin que `API_BASE` soit disponible.
+
+3. **Héberger le backend**
+   - Déployer l'API (`server.js` ou `backend/`) sur un service compatible tel que Render ou Railway.
+   - Récupérer l'URL publique du service et la reporter dans `config.js` pour exposer le backend au frontend.
+
 ## License
 Distributed under the ISC license.
