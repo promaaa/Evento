@@ -4152,8 +4152,8 @@
                 const lamports = Math.round(total * solanaWeb3.LAMPORTS_PER_SOL);
                 const signature = await payWithPhantom(event.beneficiaryWallet, lamports);
 
-                document.getElementById('buyTicketBtn').innerHTML = 'Processing purchase...';
-                document.getElementById('buyTicketBtn').disabled = true;
+                btn.innerHTML = 'Verifying...';
+                showMessage('exploreMessages', 'info', 'Payment sent. Verifying transaction...');
 
                 const res = await fetch(`${API_BASE}/events/${event.id}/tickets`, {
                     method: 'POST',
@@ -4165,7 +4165,8 @@
                         signature
                     })
                 });
-                if (!res.ok) throw new Error('Server error');
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Server error');
 
                 showMessage('exploreMessages', 'success', `✅ Purchased ${window.selectedQuantity} ${ticket.name} ticket(s) for "${event.title}"`);
                 closeTicketModal();
