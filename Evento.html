@@ -918,30 +918,32 @@
 
         /* === PROJETS PREMIUM === */
         .project-card {
-            background: var(--card);
+            position: relative;
+            height: 360px;
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: all var(--transition-normal);
+            display: flex;
+            align-items: flex-end;
+            background: var(--gray-900);
             cursor: pointer;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
         }
 
         .project-card:hover {
-            border-color: var(--gray-600);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
 
         .project-image {
-            width: 100%;
-            height: 200px;
+            position: absolute;
+            inset: 0;
             background: var(--gray-800);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             color: var(--muted-foreground);
-            position: relative;
             overflow: hidden;
         }
 
@@ -949,16 +951,27 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform var(--transition-normal), filter var(--transition-normal);
         }
 
-        .project-content {
+        .project-card:hover .project-image img {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .project-info {
+            position: relative;
+            z-index: 1;
+            width: 100%;
             padding: var(--spacing-6);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
         }
 
         .project-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: var(--spacing-2);
+            margin: 0 0 var(--spacing-2);
             color: var(--foreground);
         }
 
@@ -968,69 +981,26 @@
             margin-bottom: var(--spacing-4);
         }
 
-        .project-stats {
-            background: var(--secondary);
-            padding: var(--spacing-4);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-value {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            color: var(--foreground);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--muted-foreground);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: rgba(42, 42, 42, 0.8);
-            border-radius: 3px;
+        .progress-track {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
             overflow: hidden;
-            margin: 16px 0;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: var(--spacing-3);
         }
 
         .progress-fill {
             height: 100%;
             background: var(--gradient-cosmic);
-            border-radius: 3px;
-            transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            width: 0;
         }
 
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255,255,255,0.3), 
-                transparent);
-            animation: progressShimmer 2s infinite;
-        }
-
-        @keyframes progressShimmer {
-            0% { 
-                transform: translateX(-100%); 
-            }
-            100% { 
-                transform: translateX(100%); 
-            }
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted-foreground);
+            margin-bottom: var(--spacing-4);
         }
 
         .project-description {
@@ -2726,6 +2696,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            z-index: 2;
         }
 
         .event-location {
@@ -3536,40 +3507,30 @@
                 return `
                     <div class="project-card">
                         <div class="project-image">
-                            ${event.imageUrl ? 
-                                `<img src="${event.imageUrl}" alt="${event.title}">` : 
+                            ${event.imageUrl ?
+                                `<img src="${event.imageUrl}" alt="${event.title}">` :
                                 eventTypeIcon
                             }
-                            <div class="event-type-badge">${eventTypeLabel}</div>
                         </div>
-                        <div class="project-content">
+                        <div class="event-type-badge">${eventTypeLabel}</div>
+                        <div class="project-info">
                             <h3 class="project-title">${event.title}</h3>
                             <p class="project-org">${event.organization}</p>
                             ${event.location ? `<p class="event-location">📍 ${event.location}</p>` : ''}
-                            
+
                             ${ticketInfo}
-                            
-                            <div class="project-stats">
-                                <div>
-                                    <div class="stat-value">${formatSOL(event.raised)} SOL</div>
-                                    <div class="stat-label">${isEvent ? 'Raised' : 'Raised'}</div>
-                                </div>
-                                <div>
-                                    <div class="stat-value">${formatSOL(event.goal)} SOL</div>
-                                    <div class="stat-label">${isEvent ? 'Objectif' : 'Objectif'}</div>
-                                </div>
-                                <div>
-                                    <div class="stat-value">${progress.toFixed(0)}%</div>
-                                    <div class="stat-label">Atteint</div>
-                                </div>
-                            </div>
-                            
-                            <div class="progress-bar">
+
+                            <div class="progress-track">
                                 <div class="progress-fill" style="width: ${progress}%"></div>
                             </div>
-                            
+
+                            <div class="project-meta">
+                                <span>${formatSOL(event.raised)} / ${formatSOL(event.goal)} SOL</span>
+                                <span>${progress.toFixed(0)}%</span>
+                            </div>
+
                             <p class="project-description">${event.description}</p>
-                            
+
                             ${isEvent && event.tickets ? `
                                 <div class="ticket-types-preview">
                                     ${event.tickets.slice(0, 2).map(ticket => `
@@ -3581,7 +3542,7 @@
                                     ${event.tickets.length > 2 ? `<div class="more-tickets">+${event.tickets.length - 2} autres</div>` : ''}
                                 </div>
                             ` : ''}
-                            
+
                             <div class="project-actions">
                                 ${isEvent ? `
                                     <button class="btn btn-primary" type="button" onclick="showTickets(${event.id})">
@@ -3592,7 +3553,7 @@
                                         Contribuer
                                     </button>
                                 `}
-                                ${canDelete ? 
+                                ${canDelete ?
                                     `<button class="btn btn-ghost" onclick="deleteEvent('${event.id}')">
                                         Supprimer
                                     </button>` : ''
