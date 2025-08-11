@@ -1,97 +1,61 @@
 # Evento
 
-Evento is an experimental ticketing and crowdfunding platform built on the **Solana** blockchain. It provides a single-page web interface (HTML/JavaScript) to create events, sell tickets and verify on-chain payments. The API is built with **Node.js** and **Express**; a more complete MongoDB-backed implementation lives in the `backend` directory.
+Evento is an experimental ticketing and crowdfunding platform built on the **Solana** blockchain. It ships with a minimal in-memory API and an optional MongoDB-backed backend.
 
-## Key Features
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Quick Start](#quick-start)
+- [Full API with MongoDB](#full-api-with-mongodb)
+- [Project Structure](#project-structure)
+- [Additional Documentation](#additional-documentation)
+- [GitHub Pages](#github-pages)
+- [License](#license)
 
-- Phantom wallet connection and verification on the Solana *devnet*.
-- Create events and manage a ticket list.
-- Purchase tickets with SOL transfers and update the collected amount.
-- Simple REST API (`server.js`) or full database-backed API (`backend/`).
-
-## Requirements
-
-- [Node.js](https://nodejs.org/) (version 18 or newer recommended)
-- [npm](https://www.npmjs.com/) (ships with Node.js)
-- Optional: [MongoDB](https://www.mongodb.com/) if using the full version in `backend/`
+## Project Overview
+- Connect a [Phantom](https://phantom.app/) wallet on the Solana **devnet**.
+- Create events with ticket tiers and monitor funds raised.
+- Purchase tickets by signing SOL transfers; transactions are verified on-chain.
+- Start with the simple in-memory API in `server.js` or switch to the MongoDB implementation in `backend/`.
 
 ## Quick Start
-
-1. **Clone the repository**
-   ```bash
-   git clone <REPO_URL>
-   cd Evento
-   ```
-
-2. **Install dependencies for the minimal API**
+1. **Install dependencies**
    ```bash
    npm install
    ```
-
-3. **Start the server**
+2. **Run the minimal API and web app**
    ```bash
    npm start
    ```
-   This serves both the API and the `index.html` interface at `http://localhost:3000`.
+   The server exposes the REST API and serves `index.html` at [http://localhost:3000](http://localhost:3000).
+3. **Use the interface**
+   - Connect a Phantom wallet configured for devnet.
+   - Create an event or use one of the seeded examples.
+   - Select a ticket and follow the prompts to sign the transaction.
 
-4. **Test ticket purchases**
-   - Connect your Phantom wallet to the `devnet`.
-   - Create an event or use the default ones.
-   - Select a ticket and follow the on-screen instructions to sign the transaction.
-
-## Using the full API with MongoDB
-
-An advanced version of the API is available in the `backend/` folder.
-
-1. **Installation**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-2. **Environment variables**
-   Create a `.env` file at the root of `backend/` containing, for example:
-   ```env
-   MONGO_URI=mongodb://127.0.0.1:27017/evento
-   SOLANA_SECRET_KEY=[0,1,2,...]
-   ```
-   - `MONGO_URI`: MongoDB connection URI.
-   - `SOLANA_SECRET_KEY`: server wallet secret key (64-element JSON array).
-
-3. **Start the full API**
-   ```bash
-   npm start
-   ```
-   The API also listens on `http://localhost:3000`.
-
-4. **Consume the API**
-   The `index.html` interface can be used as-is. Exposed routes include `GET /events`, `POST /events`, `POST /events/:id/tickets`…
+## Full API with MongoDB
+A richer API that persists events and contributions lives under [`backend/`](backend/). A separate `README` in that directory covers setup in detail, including required environment variables such as `MONGO_URI` and `SOLANA_SECRET_KEY`.
 
 ## Project Structure
-
 ```
 .
 ├── index.html          # Web interface
-├── server.js            # Minimal API (Express + in-memory storage)
+├── server.js          # Minimal API (Express + in-memory storage)
 ├── package.json
-└── backend/             # Full API with MongoDB
-    ├── models/          # Mongoose schemas
-    ├── routes/          # Express routes
-    └── server.js        # Entry point for the full API
+├── backend/           # Full API with MongoDB
+└── docs/              # Additional documentation
 ```
 
-## Deploying to GitHub Pages
+## Additional Documentation
+- [Architecture overview](docs/architecture.md)
 
-1. Ensure `index.html` is committed in the repository root or a `docs/` folder.
-2. Push the repository to GitHub and enable **GitHub Pages** in the repository settings.
-3. The page assumes the API is served from the same origin. If your API is hosted elsewhere, set `window.API_BASE` before loading the script.
+## GitHub Pages
+The repository includes a workflow at `.github/workflows/pages.yml` that builds a static site containing `index.html` and the
+contents of `docs/`. To publish:
 
-## Development
+1. Enable GitHub Pages in the repository settings and choose **GitHub Actions** as the source.
+2. Push to `main` and the site will automatically deploy to the configured Pages URL.
 
-- The Express API uses `cors` and `express.json`.
-- Solana transactions are verified via `@solana/web3.js` on the `devnet` network.
-- The MongoDB version persists events, tickets and contributions.
+The generated site serves the dApp on the root path and documentation under `/docs`.
 
 ## License
-
-Project distributed under the ISC license.
+Distributed under the ISC license.
