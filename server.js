@@ -1,7 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const { Connection, clusterApiUrl, LAMPORTS_PER_SOL } = require('@solana/web3.js');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { Connection, clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Reusable Solana connection
 const connection = new Connection(
@@ -20,8 +24,8 @@ const sessions = new Map();
 const events = [
   {
     id: 1,
-    title: '42 School Hackathon',
-    organization: '42 School',
+    title: 'Ecole 42 Hackathon',
+    organization: 'Ecole 42',
     goal: 5000,
     raised: 1500,
     description:
@@ -64,7 +68,7 @@ const events = [
     goal: 10000,
     raised: 4500,
     description:
-      'The largest student gala in Europe organized by Ecole Polytechnique.',
+      'The largest student festival in France organized by Ecole Polytechnique.',
     imageUrl:
       'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
 
@@ -228,3 +232,5 @@ app.get('/', (_req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+
+export default app;

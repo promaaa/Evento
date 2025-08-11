@@ -1,8 +1,8 @@
 {
   "name": "evento",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend server for Evento platform",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
@@ -10,9 +10,9 @@
     "build": "vite build"
   },
   "keywords": [],
-  "author": "",
+  "author": "Evento Team",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@solana/web3.js": "^1.98.4",
     "cors": "^2.8.5",
