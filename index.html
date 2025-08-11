@@ -3423,8 +3423,7 @@
             }
 
             try {
-                // Always prompt the wallet so the user can select the account
-                const response = await provider.connect({ onlyIfTrusted: false });
+                const response = await provider.connect();
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
@@ -3474,13 +3473,15 @@
             provider = provider || getProvider();
             if (!provider || !provider.isPhantom) throw new Error('Please connect your Phantom wallet');
 
-            // Always prompt the Phantom extension so the user can confirm the wallet
-            const response = await provider.connect({ onlyIfTrusted: false });
-            walletAddress = response.publicKey.toString();
-            updateWalletUI();
+            if (!provider.isConnected) {
+                const response = await provider.connect();
+                walletAddress = response.publicKey.toString();
+                updateWalletUI();
+            } else {
+                walletAddress = provider.publicKey.toString();
+            }
 
-            connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
-
+            connection = connection || new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
 
             const transaction = new solanaWeb3.Transaction().add(
                 solanaWeb3.SystemProgram.transfer({
@@ -3724,15 +3725,16 @@
             loadEvents();
             displayEvents();
 
-            // Retrieve wallet state if already connected
+            // Attempt to reconnect Phantom if already trusted
             provider = getProvider();
             if (provider) {
-                // If the wallet was already connected, restore the session
-                if (provider.isConnected) {
-                    walletAddress = provider.publicKey.toString();
-
+                try {
+                    const resp = await provider.connect({ onlyIfTrusted: true });
+                    walletAddress = resp.publicKey.toString();
                     connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                     updateWalletUI();
+                } catch (err) {
+                    console.log('Auto-connect skipped', err);
                 }
 
                 provider.on('accountChanged', (publicKey) => {
