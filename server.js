@@ -1,12 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { Connection, clusterApiUrl } = require('@solana/web3.js');
-const Stripe = require('stripe');
+const { Connection, clusterApiUrl, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20',
-});
+// Reusable Solana connection
+const connection = new Connection(
+  process.env.SOLANA_RPC_URL || clusterApiUrl('devnet'),
+  'confirmed'
+);
 
 const app = express();
 app.use(cors());
@@ -90,24 +91,7 @@ app.post('/auth/wallet', (req, res) => {
   res.json({ success: true });
 });
 
-// Create a PaymentIntent for a given amount
-app.post('/payments/create-intent', async (req, res) => {
-  const { amount, currency = 'usd' } = req.body;
-  if (!amount) {
-    return res.status(400).json({ error: 'Missing amount' });
-  }
-  try {
-    const intent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      automatic_payment_methods: { enabled: true },
-    });
-    res.json({ clientSecret: intent.client_secret, paymentIntentId: intent.id });
-  } catch (err) {
-    console.error('Payment intent creation failed', err);
-    res.status(500).json({ error: 'Payment intent creation failed' });
-  }
-});
+// (Removed stripe payment intent route; payments are handled via on-chain transfers)
 
 // List all events
 app.get('/events', (_req, res) => {
@@ -155,7 +139,7 @@ app.post('/events', (req, res) => {
 // Update ticket sales for an event
 app.post('/events/:id/tickets', async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const { ticketIndex, quantity = 1, buyer, paymentIntentId } = req.body;
+  const { ticketIndex, quantity = 1, buyer, signature } = req.body;
   const event = events.find(e => e.id === id);
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
@@ -164,19 +148,37 @@ app.post('/events/:id/tickets', async (req, res) => {
   if (ticket.sold + quantity > ticket.quantity) {
     return res.status(400).json({ error: 'Not enough tickets available' });
   }
+  if (!signature) {
+    return res.status(400).json({ error: 'Missing transaction signature' });
+  }
 
   try {
-    const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    if (intent.status !== 'succeeded') {
-      return res.status(400).json({ error: 'Payment not completed' });
+    const tx = await connection.getParsedTransaction(signature, {
+      commitment: 'confirmed',
+    });
+    if (!tx) {
+      return res.status(400).json({ error: 'Transaction not found' });
+    }
+    const transferIx = tx.transaction.message.instructions.find(
+      (ix) => ix.program === 'system' && ix.parsed?.type === 'transfer'
+    );
+    if (!transferIx) {
+      return res.status(400).json({ error: 'No transfer instruction' });
+    }
+    const destination = transferIx.parsed.info.destination;
+    const amountLamports = transferIx.parsed.info.lamports;
+    const expectedLamports = Math.round(ticket.price * quantity * LAMPORTS_PER_SOL);
+    if (destination !== event.beneficiaryWallet || amountLamports < expectedLamports) {
+      return res.status(400).json({ error: 'Payment details mismatch' });
     }
   } catch (err) {
-    return res.status(400).json({ error: 'Invalid payment intent' });
+    console.error('Transaction verification failed', err);
+    return res.status(400).json({ error: 'Transaction verification failed' });
   }
 
   ticket.sold += quantity;
   event.raised += ticket.price * quantity;
-  event.contributions.push({ buyer, amount: ticket.price * quantity, quantity });
+  event.contributions.push({ buyer, amount: ticket.price * quantity, quantity, signature });
 
   res.json({ success: true, event });
 });
