@@ -3246,6 +3246,7 @@
                             <path d="M8 17v-3" />
                         </svg>
                     </div>
+
                     <h3 class="feature-title">Full auditability</h3>
                     <p class="feature-description">
                         On-chain transparency. Every transaction verifiable on Solana explorer.
@@ -4204,6 +4205,7 @@
         function showTickets(eventId) {
             if (!walletAddress) {
                 showMessage('exploreMessages', 'error', 'Veuillez connecter votre wallet');
+
                 return;
             }
             const event = events.find(e => e.id === eventId);
