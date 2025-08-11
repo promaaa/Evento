@@ -3417,18 +3417,21 @@
         async function connectWallet() {
             provider = getProvider();
             if (!provider) {
-                showMessage('createMessages', 'error', 'Please connect your Phantom wallet');
+                showMessage('createMessages', 'error', 'Please install the Phantom extension');
+                showMessage('exploreMessages', 'error', 'Please install the Phantom extension');
                 return;
             }
 
             try {
-                const response = await provider.connect();
+                // Always prompt the wallet so the user can select the account
+                const response = await provider.connect({ onlyIfTrusted: false });
                 walletAddress = response.publicKey.toString();
                 connection = new solanaWeb3.Connection(SOLANA_NETWORK, 'confirmed');
                 updateWalletUI();
                 displayEvents();
                 console.log('✅ Wallet connected:', walletAddress);
                 showMessage('createMessages', 'success', 'Wallet connected successfully');
+                showMessage('exploreMessages', 'success', 'Wallet connected successfully');
                 try {
                     await fetch(`${API_BASE}/auth/wallet`, {
                         method: 'POST',
@@ -3440,11 +3443,12 @@
                 }
             } catch (error) {
                 console.error('❌ Wallet connection error:', error);
-                if (error && (error.message?.includes('User rejected') || error.code === 4001)) {
-                    showMessage('createMessages', 'error', 'Connection denied');
-                } else {
-                    showMessage('createMessages', 'error', 'Connection failed');
-                }
+                const msg =
+                    error && (error.message?.includes('User rejected') || error.code === 4001)
+                        ? 'Connection denied'
+                        : 'Connection failed';
+                showMessage('createMessages', 'error', msg);
+                showMessage('exploreMessages', 'error', msg);
             }
         }
 
@@ -3458,9 +3462,11 @@
                 updateWalletUI();
                 displayEvents();
                 showMessage('createMessages', 'success', 'Wallet disconnected');
+                showMessage('exploreMessages', 'success', 'Wallet disconnected');
             } catch (error) {
                 console.error('❌ Disconnect error:', error);
                 showMessage('createMessages', 'error', 'Disconnect failed');
+                showMessage('exploreMessages', 'error', 'Disconnect failed');
             }
         }
 
