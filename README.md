@@ -28,19 +28,13 @@ Evento is an experimental ticketing and crowdfunding platform built on the **Sol
    npm install
    ```
 
-3. **Start the API server**
+3. **Start the server**
    ```bash
    npm start
    ```
-   The API is now available at `http://localhost:3000`.
+   This serves both the API and the `Evento.html` interface at `http://localhost:3000`.
 
-4. **Launch the web interface**
-   ```bash
-   npx http-server -c-1 .
-   ```
-   Then open `http://localhost:8080/Evento.html` in your browser. The frontend is preconfigured to reach the API at `http://localhost:3000`.
-
-5. **Test ticket purchases**
+4. **Test ticket purchases**
    - Connect your Phantom wallet to the `devnet`.
    - Create an event or use the default ones.
    - Select a ticket and follow the on-screen instructions to sign the transaction.
