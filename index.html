@@ -3384,10 +3384,17 @@
         }
 
         function getProvider() {
+            // Prefer the explicit Phantom provider if available
+            if (window.phantom && window.phantom.solana && window.phantom.solana.isPhantom) {
+                return window.phantom.solana;
+            }
+
+            // Fallback to the legacy global Solana provider
             if ('solana' in window) {
                 const provider = window.solana;
-                if (provider.isPhantom) return provider;
+                if (provider && provider.isPhantom) return provider;
             }
+
             return null;
         }
 
