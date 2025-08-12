@@ -1,12 +1,12 @@
-# 🚀 Live Demo
 
-The site is currently available at: [https://promaaa.github.io/Evento/#](https://promaaa.github.io/Evento/#)
 
 # Evento
 
 ![Screenshot](docs/picture/screenshot.png)
 
 Evento is a ticketing and crowdfunding dApp for the **Solana** blockchain that runs entirely as a static site. It includes a minimal in-memory API and an optional MongoDB-backed backend.
+
+The site is currently available [here](https://promaaa.github.io/Evento/#)
 
 ## Features
 - Create events with configurable ticket tiers and track funds raised.
@@ -65,3 +65,4 @@ A richer API that persists events and contributions lives under [`backend/`](bac
 
 ## License
 Distributed under the ISC License. See [LICENSE](LICENSE) for details.
+
