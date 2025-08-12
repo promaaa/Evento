@@ -3246,6 +3246,7 @@
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   type: 'event',
+                  location: 'Paris, France',
                   tickets: [
                       { id: 1, name: 'Day Pass', price: 0.5, quantity: 100, sold: 20 },
                       { id: 2, name: 'Weekend Pass', price: 0.9, quantity: 80, sold: 10 }
@@ -3259,15 +3260,17 @@
                   raised: 3000,
                   description: 'Inter-school sports tournament with various disciplines and a festive atmosphere.',
                   imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80',
-
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   type: 'event',
+                  location: 'Lyon, France',
                   tickets: [
                       { id: 1, name: 'Spectator Pass', price: 0.3, quantity: 200, sold: 50 },
                       { id: 2, name: 'Competitor Pass', price: 0.6, quantity: 150, sold: 30 }
                   ]
               },
+
+
               {
                   id: '3',
                   title: 'Polytechnique Point Gamma',
@@ -3275,12 +3278,11 @@
                   goal: 6000,
                   raised: 4500,
                   description: 'The largest student festival in France organized by Ecole Polytechnique.',
-
-                imageUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
-
+                  imageUrl: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80',
                   beneficiaryWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   creatorWallet: '4iT7RMdXsunRWfhCpR4DSGMXPmcxUWnj6Dh4xQFvkGrr',
                   type: 'event',
+                  location: 'Palaiseau, France',
                   tickets: [
                       { id: 1, name: 'Standard Entry', price: 1.2, quantity: 300, sold: 120 },
                       { id: 2, name: 'VIP Entry', price: 2.5, quantity: 100, sold: 40 }
@@ -3767,7 +3769,15 @@
                         <div class="project-info">
                             <h3 class="project-title">${event.title}</h3>
                             <p class="project-org">${event.organization}</p>
-                            ${event.location ? `<p class="event-location">📍 ${event.location}</p>` : ''}
+                            ${(() => {
+                                // Fallback pour les anciens events sans location
+                                if (event.location) return `<p class="event-location">📍 ${event.location}</p>`;
+                                if (event.title && event.title.toLowerCase().includes('ecole 42')) return '<p class="event-location">📍 Paris, France</p>';
+                                if (event.title && event.title.toLowerCase().includes('centrale lyon')) return '<p class="event-location">📍 Lyon, France</p>';
+                                if (event.title && event.title.toLowerCase().includes('polytechnique')) return '<p class="event-location">📍 Palaiseau, France</p>';
+                                if (event.title && event.title.toLowerCase().includes('solana')) return '<p class="event-location">📍 Paris, France</p>';
+                                return '';
+                            })()}
 
                             ${ticketInfo}
 
