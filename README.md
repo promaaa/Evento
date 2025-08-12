@@ -1,117 +1,64 @@
-Evento – Solana-powered Events and Funding (Phantom Wallet)
-
-Overview
-- Single-page app for launching events, selling tickets, and funding initiatives on Solana using Phantom.
-- Works as a static site (GitHub Pages) with optional Node server for local development.
-
-Live Features
-- Connect Phantom on Devnet, display wallet balance, buy tickets via on-chain SOL transfer.
-- Transaction verification is handled client-side for static deployments (and server-side when running the Node server).
-- Friendly UX for users without Phantom (banner + install CTA).
-
-Quick Start (Local)
-1) Prerequisites: Node 18+ and Phantom wallet.
-2) Install deps and run server:
-   - npm install
-   - npm start
-3) Open http://localhost:3000
-
-Static Mode Notes
-- Backend API calls are attempted first; if unavailable, the app falls back to default events in the browser and localStorage for persistence.
-- Ticket purchases in static mode rely on Phantom to send transfers on Devnet, then verify client-side via the Solana RPC.
-- To use mainnet later, change SOLANA_NETWORK in `index.html` and set your production RPC in a proxy if needed.
-
-Configure Network
-- Devnet is used by default: const SOLANA_NETWORK = 'https://api.devnet.solana.com'
-- If you host a custom RPC: change the value above.
-
-Phantom Wallet
-- Ensure Phantom is installed and Devnet is selected.
-- Get Devnet SOL via a faucet.
-
-Local Development API (Optional)
-- If you want server-side verification and in-memory events, run the Node server (npm start).
-- Endpoints:
-  - GET /events – list events
-  - POST /events/:id/tickets – verify the provided transaction signature and update ticket sales
-
-Remote Backend
-- To point the app to a hosted API (Render, Railway, etc.), create `config.js` at the project root.
-- Example:
-  ```js
-  window.API_BASE = "https://your-backend.onrender.com";
-  ```
-- If `config.js` is absent, the app runs fully static using browser storage.
-
-Customizing Events
-- Edit default events in `index.html` (look for `defaultEvents`).
-- For the Node server list, edit the `events` array in `server.js`.
-
-Troubleshooting
-- Phantom not detected: Banner and button will show an install link.
-- Transaction fails: Ensure wallet has sufficient Devnet SOL. The app pre-checks funds.
-- Pages not updating: Verify Pages source branch/path and that `index.html` is in the correct directory.
 
 # Evento
 
-Evento is an experimental ticketing and crowdfunding platform built on the **Solana** blockchain. It ships with a minimal in-memory API and an optional MongoDB-backed backend.
+![Screenshot](docs/picture/screenshot.png)
 
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Quick Start](#quick-start)
-- [Full API with MongoDB](#full-api-with-mongodb)
-- [Project Structure](#project-structure)
-- [Additional Documentation](#additional-documentation)
-- [GitHub Pages](#github-pages)
-- [License](#license)
+Evento is a ticketing and crowdfunding dApp for the **Solana** blockchain that runs entirely as a static site. It includes a minimal in-memory API and an optional MongoDB-backed backend.
 
-## Project Overview
-- Create events with ticket tiers and monitor funds raised.
+## Features
+- Create events with configurable ticket tiers and track funds raised.
 - Purchase tickets through direct SOL transfers using a Phantom wallet.
-- Start with the simple in-memory API in `server.js` or switch to the MongoDB implementation in `backend/`.
+- Works as a static site with optional server-side verification.
+
+## Prerequisites
+- Node.js 18+
+- Phantom wallet with SOL.
 
 ## Quick Start
-1. **Install dependencies**
-   ```bash
+1. Install dependencies:
+   ```sh
    npm install
    ```
-2. **Run the minimal API and web app**
-   ```bash
+2. Run the local server:
+   ```sh
    npm start
    ```
-   The server exposes the REST API and serves `index.html` at [http://localhost:3000](http://localhost:3000).
-3. **Use the interface**
-   - Create an event or use one of the seeded examples.
-   - Connect your Phantom wallet when prompted.
-   - Purchasing a ticket will trigger a SOL transfer and submit the transaction signature to `/events/:id/tickets`.
+3. Open [http://localhost:3000](http://localhost:3000)
+
+## Configuring the API URL
+If you host the API elsewhere (Render, Railway, etc.):
+1. Create `config.js` at the project root with:
+   ```js
+   window.API_BASE = "https://your-backend.example";
+   ```
+2. Reference `config.js` in `index.html` before the main script tag.
+
+## Network Configuration
+Devnet is the default network:
+```js
+const SOLANA_NETWORK = "https://api.devnet.solana.com";
+```
+Change this value in `index.html` to point to a custom RPC or mainnet.
+
+## Customizing Events
+- Static mode: edit the `defaultEvents` array in `index.html`.
+- Node server: edit the `events` array in `server.js`.
 
 ## Full API with MongoDB
-A richer API that persists events and contributions lives under [`backend/`](backend/). A separate `README` in that directory covers setup in detail, including required environment variables such as `MONGO_URI` and `SOLANA_SECRET_KEY`.
+A richer API that persists events and contributions lives under [`backend/`](backend/). See the README in that directory for setup and environment variables (`MONGO_URI`, `SOLANA_SECRET_KEY`).
 
 ## Project Structure
 ```
 .
 ├── index.html          # Web interface
-├── server.js          # Minimal API (Express + in-memory storage)
+├── server.js           # Minimal API (Express + in-memory storage)
 ├── package.json
-├── backend/           # Full API with MongoDB
-└── docs/              # Additional documentation
+├── backend/            # Full API with MongoDB
+├── docs/               # Additional documentation
+│   └── picture/
+│       └── screenshot.png
+└── ...
 ```
-
-## Additional Documentation
-- [Architecture overview](docs/architecture.md)
-
-## GitHub Pages
-.github/workflows/pages.yml builds the static site. Publish by:
-
-- Enable GitHub Pages in repository settings and choose **GitHub Actions** as the source.
-- (Optional) If you have a backend, add `config.js` at the project root with `window.API_BASE = "https://your-backend.example";`.
-- Push to `main` to trigger the workflow and deploy.
-
-The generated site serves the dApp at the root and documentation under `/docs`.
-
-4. **Générer le site statique localement**
-   - Exécuter `npm run build:pages` pour produire le dossier `dist/` avec `index.html`, la documentation et, si présent, `config.js`.
 
 ## License
 Distributed under the ISC License. See [LICENSE](LICENSE) for details.
