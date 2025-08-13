@@ -373,7 +373,7 @@
 
         /* === LAYOUT === */
         .container {
-            max-width: 1200px;
+            max-width: min(1200px, 95vw);
             margin: 0 auto;
             padding: 0 var(--spacing-6);
         }
@@ -381,6 +381,18 @@
         @media (max-width: 640px) {
             .container {
                 padding: 0 var(--spacing-4);
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 0 var(--spacing-2);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container {
+                padding: 0 var(--spacing-8);
             }
         }
 
@@ -654,14 +666,19 @@
         }
 
         .grid-cols-3 {
-            grid-template-columns: repeat(3, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 48px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 360px) {
             .grid-cols-3 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-                gap: 32px;
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .grid-cols-3 {
+                gap: 64px;
             }
         }
 
